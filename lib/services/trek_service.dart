@@ -6,7 +6,7 @@ import '../models/trek_model.dart';
 
 class TrekService {
   // ✅ EDITED: Corrected the IP address typo. Please verify this is your computer's actual IP.
-  final String _baseUrl = 'https://flutter-trekify-project-backend.onrender.com/api/data/';
+  final String _baseUrl = 'http://192.168.1.12:5000/api/data/';
 
   Future<Map<String, dynamic>> fetchTreks() async {
     try {
