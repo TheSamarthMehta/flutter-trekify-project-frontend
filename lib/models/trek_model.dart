@@ -12,7 +12,6 @@ class Trek {
   final bool guideNeeded;
   final bool snowTrek;
   final String recommendedGear;
-  // ✅ ADDED: The new description field
   final String description;
 
   Trek({

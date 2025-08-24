@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class AuthService {
   // ✅ EDITED: Replace "localhost" or the old IP with your computer's current network IP.
   // Make sure your computer and test device are on the same Wi-Fi network.
-  final String _baseUrl = 'http://192.168.1.12:5000';
+  final String _baseUrl = 'http://192.168.1.103:5000';
 
   // A public getter to safely expose the base URL
   String get baseUrl => _baseUrl;
