@@ -151,7 +151,6 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'Could not connect to the server.');
-    }
-    isLoading.value = false;
+    }    isLoading.value = false;
   }
 }
