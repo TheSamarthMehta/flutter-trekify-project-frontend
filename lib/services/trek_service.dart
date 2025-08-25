@@ -1,27 +1,36 @@
+// lib/services/trek_service.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/trek_model.dart';
+import 'dart:developer' as developer;
 
 class TrekService {
-  // ✅ EDITED: Corrected the IP address typo. Please verify this is your computer's actual IP.
-  final String _baseUrl = 'http://192.168.1.103:5000/api/data/';
+  final String _baseUrl = 'http://10.93.136.170:5000/api/data/';
 
   Future<Map<String, dynamic>> fetchTreks() async {
     try {
-      // ✅ EDITED: Reduced the timeout from 10 to 5 seconds for a faster failure response.
       final response = await http.get(Uri.parse(_baseUrl)).timeout(
-        const Duration(seconds: 5),
+        const Duration(seconds: 10), // Increased timeout for slower networks
         onTimeout: () {
           throw TimeoutException('The connection has timed out. Please check your IP address and network.');
         },
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> body = jsonDecode(response.body);
-        List<Trek> treks = body.map((dynamic item) => Trek.fromJson(item)).toList();
-        return {'success': true, 'data': treks};
+        // ✅ CORRECTED: Decode the entire object first
+        final Map<String, dynamic> body = jsonDecode(response.body);
+
+        // ✅ CORRECTED: Check for success and extract the 'data' list
+        if (body['success'] == true && body['data'] is List) {
+          final List<dynamic> trekData = body['data'];
+          List<Trek> treks = trekData.map((dynamic item) => Trek.fromJson(item)).toList();
+          return {'success': true, 'data': treks};
+        } else {
+          developer.log('Server returned an unexpected data format: $body', name: 'TrekService');
+          return {'success': false, 'error': 'Server returned an unexpected data format.'};
+        }
       } else {
         return {'success': false, 'error': 'Failed to load treks. Server responded with status code: ${response.statusCode}'};
       }

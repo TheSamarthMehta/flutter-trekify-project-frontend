@@ -1,3 +1,4 @@
+// lib/models/trek_model.dart
 class Trek {
   final String trekName;
   final String state;
@@ -28,55 +29,53 @@ class Trek {
     required this.guideNeeded,
     required this.snowTrek,
     required this.recommendedGear,
-    // ✅ ADDED: Initialize in the constructor
     required this.description,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'Trek Name': trekName,
-      'State': state,
-      'District': district,
-      'Difficulty Level': difficulty,
-      'Season': season,
-      'Type': type,
-      'Images': imageUrl,
-      'Altitude': altitude,
-      'Total Distance': totalDistance,
-      'Age Group': ageGroup,
-      'Guide Needed?': guideNeeded,
-      'Snow Trek?': snowTrek,
-      'Recommended Gear': recommendedGear,
-      'Description': description,
+      'trekName': trekName,
+      'state': state,
+      'district': district,
+      'difficultyLevel': difficulty,
+      'season': season,
+      'trekType': type,
+      'image': imageUrl,
+      'maxAltitude': altitude,
+      'distance': totalDistance,
+      'ageGroup': ageGroup,
+      'guideNeeded': guideNeeded,
+      'snowTrek': snowTrek,
+      'recommendedGear': recommendedGear,
+      'trekDescription': description,
     };
   }
 
   factory Trek.fromJson(Map<String, dynamic> json) {
     return Trek(
-      trekName: json['Trek Name'] ?? 'Unknown Trek',
-      state: json['State'] ?? 'Unknown State',
-      district: json['District'] ?? 'N/A',
-      // ✅ FIXED: Changed to match your API data
-      difficulty: json['Difficulty Level'] ?? 'N/A',
-      season: json['Season'] ?? 'All Seasons',
-      type: json['Type'] ?? 'Miscellaneous',
-      // ✅ FIXED: Changed to match your API data
-      imageUrl: json['Images'] ?? '',
-      altitude: (json['Altitude'] ?? 'N/A').toString(),
-      totalDistance: json['Total Distance'] ?? 'N/A',
-      ageGroup: json['Age Group'] ?? 'N/A',
-      // Handle boolean conversion safely
-      guideNeeded: _parseBool(json['Guide Needed?']),
-      snowTrek: _parseBool(json['Snow Trek?']),
-      recommendedGear: json['Recommended Gear'] ?? '',
-      description: json['Description'] ?? 'No description available for this trek.',
+      // ✅ CORRECTED: Using keys directly from the server's response
+      trekName: json['trekName'] ?? 'Unknown Trek',
+      state: json['state'] ?? 'Unknown State',
+      district: json['trekType'] ?? 'N/A', // Assuming trekType maps to district
+      difficulty: json['difficultyLevel'] ?? 'N/A',
+      season: json['duration'] ?? 'All Seasons', // Assuming duration maps to season
+      type: json['trekType'] ?? 'Miscellaneous',
+      imageUrl: json['image'] ?? '',
+      altitude: (json['maxAltitude'] ?? 'N/A').toString(),
+      totalDistance: json['distance'] ?? 'N/A',
+      ageGroup: json['ageGroup'] ?? 'N/A',
+      guideNeeded: _parseBool(json['guideNeeded']),
+      snowTrek: _parseBool(json['snowTrek']),
+      recommendedGear: json['recommendedGear'] ?? '',
+      description: json['trekDescription'] ?? 'No description available for this trek.',
     );
   }
-  // Helper function to safely parse boolean values which might be strings
+
   static bool _parseBool(dynamic value) {
     if (value is bool) return value;
     if (value is String) {
-      return value.toLowerCase() == 'true' || value.toLowerCase() == 'yes';
+      final lowerValue = value.toLowerCase().trim();
+      return lowerValue == 'true' || lowerValue == 'yes' || lowerValue == 'recommended';
     }
     return false;
   }

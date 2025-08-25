@@ -10,6 +10,7 @@ import 'package:trekify/services/auth_service.dart';
 import 'package:trekify/controllers/wishlist_controller.dart';
 import 'package:trekify/controllers/states_controller.dart';
 import 'iternary_controllers.dart';
+import 'dart:developer' as developer;
 
 class AuthController extends GetxController {
   final AuthService _authService = Get.find<AuthService>();
@@ -25,11 +26,9 @@ class AuthController extends GetxController {
     super.onInit();
   }
 
-  /// This is now the main entry point for existing users.
   Future<void> tryAutoLogin() async {
     final token = _box.read(_userTokenKey);
     if (token == null) {
-      // If no token, they need to log in.
       Get.offAllNamed('/login');
       return;
     }
@@ -42,10 +41,8 @@ class AuthController extends GetxController {
         user.value = UserModel.fromJson(json.decode(response.body));
         isAuthenticated.value = true;
         await _fetchAllDataForUser(user.value!.id);
-        // If login is successful, go directly to the main app.
         Get.offAllNamed('/');
       } else {
-        // If token is invalid, they need to log in again.
         await signOut();
       }
     } catch (e) {
@@ -53,7 +50,6 @@ class AuthController extends GetxController {
     }
   }
 
-  /// After a user signs in, they are an existing user. Go to the main app.
   Future<void> signIn(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       Get.snackbar('Input Error', 'Please enter both email and password.');
@@ -67,20 +63,19 @@ class AuthController extends GetxController {
 
     if (statusCode == 200) {
       await _box.write(_userTokenKey, body['token']);
-      // We call tryAutoLogin to fetch user data and navigate.
       await tryAutoLogin();
     } else if (statusCode == 404) {
       Get.snackbar('Account Not Found', 'Please create an account to continue.');
       Get.toNamed('/signup', arguments: email);
     } else {
-      Get.snackbar('Login Failed', body['msg'] ?? 'An unknown error occurred.');
+      final errorMessage = body['msg'] ?? 'An unknown error occurred. Status: $statusCode';
+      developer.log('Login failed. Status: $statusCode, Body: $body', name: 'AuthController');
+      Get.snackbar('Login Failed', errorMessage);
     }
 
     isLoading.value = false;
   }
 
-  // No changes needed for signUp, signOut, or other methods.
-  // ... rest of the file ...
   Future<void> signUp(String name, String email, String password) async {
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       Get.snackbar('Input Error', 'Please fill all fields.');
@@ -93,15 +88,17 @@ class AuthController extends GetxController {
     final body = result['body'];
 
     if (statusCode == 200) {
-      Get.offAllNamed('/login');
+      // ✅ MODIFIED: Instead of going to login, immediately sign the new user in.
       Get.snackbar(
         'Success!',
-        'Your account has been created. Please sign in to continue.',
+        'Your account has been created. Logging you in...',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.teal,
         colorText: Colors.white,
         margin: const EdgeInsets.all(12),
       );
+      // This will handle token storage and navigation to the home screen.
+      await signIn(email, password);
     } else {
       Get.snackbar('Sign-Up Failed', body['msg'] ?? 'An unknown error occurred.');
     }
