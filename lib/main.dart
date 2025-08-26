@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:trekify/controllers/auth_controller.dart';
 import 'package:trekify/controllers/states_controller.dart';
 import 'package:trekify/controllers/trek_details_binding.dart';
 import 'package:trekify/views/main_screen.dart';
@@ -29,6 +30,7 @@ void main() async{
   // ✅ Register your service first
   Get.lazyPut<TrekService>(() => TrekService());
   // Get.lazyPut<OnboardingService>(() => OnboardingService());
+  Get.put(AuthController());
   Get.put(AppDrawerController());
   Get.put(HomeController());
   Get.put(TrekController());

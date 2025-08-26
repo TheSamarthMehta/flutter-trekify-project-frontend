@@ -17,7 +17,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: authController.user.value?.name);
+    _nameController = TextEditingController(text: authController.user.value?['name'] ?? '');
   }
 
   @override
@@ -105,7 +105,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 16),
             TextField(
               readOnly: true,
-              controller: TextEditingController(text: authController.user.value?.email),
+              controller: TextEditingController(text: authController.user.value?['email']),
               decoration: InputDecoration(
                 labelText: 'Email',
                 border: const OutlineInputBorder(),

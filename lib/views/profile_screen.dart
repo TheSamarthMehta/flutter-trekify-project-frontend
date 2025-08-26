@@ -111,10 +111,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             backgroundColor: Colors.white,
             child: Obx(() => CircleAvatar(
               radius: 50,
-              backgroundImage: authController.user.value?.avatar != null
-                  ? NetworkImage(authController.user.value!.avatar!)
+              backgroundImage: authController.user.value?['avatar'] != null
+                  ? NetworkImage(authController.user.value!['avatar']!)
                   : null,
-              child: authController.user.value?.avatar == null
+              child: authController.user.value?['avatar'] == null
                   ? const Icon(Icons.person, size: 50, color: Colors.grey)
                   : null,
             )),
@@ -130,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Obx(() => Column(
         children: [
           Text(
-            authController.user.value?.name ?? 'Guest User',
+            authController.user.value?['name'] ?? 'Guest User',
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            authController.user.value?.email ?? 'No Email',
+            authController.user.value?['email'] ?? 'No Email',
             style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
         ],

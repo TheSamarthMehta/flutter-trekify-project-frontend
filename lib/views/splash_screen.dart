@@ -22,18 +22,22 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initializeApp() async {
     final minDelayFuture = Future.delayed(const Duration(seconds: 2));
 
-    if (mounted) setState(() => _loadingMessage = 'Warming up...');
+    if (mounted) setState(() => _loadingMessage = 'Loading treks...');
 
     final trekController = Get.find<TrekController>();
     final trekDataFuture = trekController.fetchTreks();
 
     await Future.wait([minDelayFuture, trekDataFuture]);
 
-    if (mounted) setState(() => _loadingMessage = 'Finalizing...');
+    if (mounted) setState(() => _loadingMessage = 'Almost ready...');
 
-    // Directly proceed to the login/auto-login flow
-    final authController = Get.find<AuthController>();
-    authController.tryAutoLogin();
+    // Add a small delay for the final message
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Navigate directly to main screen (home screen)
+    if (mounted) {
+      Get.offAllNamed('/');
+    }
   }
 
   @override
