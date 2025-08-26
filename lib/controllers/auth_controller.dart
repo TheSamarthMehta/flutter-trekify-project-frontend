@@ -1,53 +1,56 @@
 import 'package:get/get.dart';
+import 'package:trekify/services/auth_service.dart';
 
 class AuthController extends GetxController {
-  var isLoggedIn = true.obs; // Set to true to skip authentication
+  var isLoggedIn = false.obs;
   var user = Rxn<Map<String, dynamic>>();
+  final AuthService _authService = AuthService();
 
   @override
   void onInit() {
     super.onInit();
-    // Initialize user with dummy data
-    user.value = {
-      'name': 'Trekker',
-      'email': 'user@trekify.com',
-    };
+    // Start logged out by default
   }
 
   Future<void> tryAutoLogin() async {
-    // For now, just set user as logged in
-    isLoggedIn.value = true;
-    user.value = {
-      'name': 'Trekker',
-      'email': 'user@trekify.com',
-    };
-    
-    // Navigate to main screen
-    Get.offAllNamed('/');
+    // TODO: load from storage if needed
+    isLoggedIn.value = false;
   }
 
   void signOut() {
     isLoggedIn.value = false;
     user.value = null;
-    Get.offAllNamed('/splash');
+    Get.offAllNamed('/login');
   }
 
-  Future<void> signIn(String email, String password) async {
-    // Mock sign in
-    isLoggedIn.value = true;
-    user.value = {
-      'name': 'Trekker',
-      'email': email,
-    };
+  Future<Map<String, dynamic>> signIn(String email, String password) async {
+    final result = await _authService.login(email: email, password: password);
+    if (result['success'] == true) {
+      final data = result['data'] as Map<String, dynamic>;
+      isLoggedIn.value = true;
+      final Map<String, dynamic>? backendUser = (data['user'] is Map<String, dynamic>) ? data['user'] as Map<String, dynamic> : null;
+      user.value = {
+        if (backendUser != null) ...backendUser,
+        if (data['token'] != null) 'token': data['token'],
+      };
+      return {'success': true};
+    }
+    return {'success': false, 'code': result['code'], 'message': result['message']};
   }
 
-  Future<void> signUp(String name, String email, String password) async {
-    // Mock sign up
-    isLoggedIn.value = true;
-    user.value = {
-      'name': name,
-      'email': email,
-    };
+  Future<Map<String, dynamic>> signUp(String name, String email, String password) async {
+    final result = await _authService.register(name: name, email: email, password: password);
+    if (result['success'] == true) {
+      final data = result['data'] as Map<String, dynamic>;
+      isLoggedIn.value = true;
+      final Map<String, dynamic>? backendUser = (data['user'] is Map<String, dynamic>) ? data['user'] as Map<String, dynamic> : null;
+      user.value = {
+        if (backendUser != null) ...backendUser,
+        if (data['token'] != null) 'token': data['token'],
+      };
+      return {'success': true};
+    }
+    return {'success': false, 'code': result['code'], 'message': result['message']};
   }
 
   void updateUserProfile(String name) {

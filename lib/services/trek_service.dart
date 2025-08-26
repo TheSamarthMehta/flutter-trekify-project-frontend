@@ -7,7 +7,7 @@ import '../models/trek_model.dart';
 import 'dart:developer' as developer;
 
 class TrekService {
-  final String _baseUrl = 'http://10.93.136.170:5000/api/data/';
+  final String _baseUrl = 'http://192.168.1.103:5000/api/data/';
 
   Future<Map<String, dynamic>> fetchTreks() async {
     try {

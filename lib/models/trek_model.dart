@@ -52,20 +52,26 @@ class Trek {
   }
 
   factory Trek.fromJson(Map<String, dynamic> json) {
+    final String difficultyLevel = json['difficultyLevel'] ?? 'N/A';
+    final String durationOrSeason = json['duration'] ?? 'All Seasons';
+    final String incomingAgeGroup = json['ageGroup'] ?? 'N/A';
+    final bool incomingGuideNeeded = _parseBool(json['guideNeeded']);
+    final bool incomingSnowTrek = _parseBool(json['snowTrek']);
+
     return Trek(
       // ✅ CORRECTED: Using keys directly from the server's response
       trekName: json['trekName'] ?? 'Unknown Trek',
       state: json['state'] ?? 'Unknown State',
       district: json['trekType'] ?? 'N/A', // Assuming trekType maps to district
-      difficulty: json['difficultyLevel'] ?? 'N/A',
-      season: json['duration'] ?? 'All Seasons', // Assuming duration maps to season
+      difficulty: difficultyLevel,
+      season: durationOrSeason, // Backend swaps season/duration in dataset
       type: json['trekType'] ?? 'Miscellaneous',
       imageUrl: json['image'] ?? '',
       altitude: (json['maxAltitude'] ?? 'N/A').toString(),
       totalDistance: json['distance'] ?? 'N/A',
-      ageGroup: json['ageGroup'] ?? 'N/A',
-      guideNeeded: _parseBool(json['guideNeeded']),
-      snowTrek: _parseBool(json['snowTrek']),
+      ageGroup: _deriveAgeGroup(incomingAgeGroup, difficultyLevel),
+      guideNeeded: incomingGuideNeeded || _inferGuideNeeded(difficultyLevel),
+      snowTrek: incomingSnowTrek || _inferSnowTrek(durationOrSeason),
       recommendedGear: json['recommendedGear'] ?? '',
       description: json['trekDescription'] ?? 'No description available for this trek.',
     );
@@ -75,8 +81,27 @@ class Trek {
     if (value is bool) return value;
     if (value is String) {
       final lowerValue = value.toLowerCase().trim();
-      return lowerValue == 'true' || lowerValue == 'yes' || lowerValue == 'recommended';
+      return lowerValue == 'true' || lowerValue == 'yes' || lowerValue == '1';
     }
     return false;
+  }
+
+  static String _deriveAgeGroup(String incoming, String difficulty) {
+    if (incoming.isNotEmpty && incoming != 'N/A') return incoming;
+    final d = difficulty.toLowerCase();
+    if (d.contains('easy')) return '10-60';
+    if (d.contains('moderate')) return '14-55';
+    if (d.contains('difficult') || d.contains('hard')) return '18-45';
+    return '12-60';
+  }
+
+  static bool _inferGuideNeeded(String difficulty) {
+    final d = difficulty.toLowerCase();
+    return d.contains('moderate') || d.contains('difficult') || d.contains('hard');
+  }
+
+  static bool _inferSnowTrek(String seasonOrDuration) {
+    final s = seasonOrDuration.toLowerCase();
+    return s.contains('winter') || s.contains('dec') || s.contains('jan') || s.contains('feb');
   }
 }

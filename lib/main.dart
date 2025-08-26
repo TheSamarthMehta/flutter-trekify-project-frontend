@@ -16,6 +16,8 @@ import 'controllers/home_controller.dart';
 import 'controllers/iternary_controllers.dart';
 import 'controllers/wishlist_controller.dart';
 import 'package:trekify/views/edit_profile_screen.dart';
+import 'package:trekify/views/login_screen.dart';
+import 'package:trekify/views/signup_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +31,6 @@ void main() async{
   ]);
   // ✅ Register your service first
   Get.lazyPut<TrekService>(() => TrekService());
-  // Get.lazyPut<OnboardingService>(() => OnboardingService());
   Get.put(AuthController());
   Get.put(AppDrawerController());
   Get.put(HomeController());
@@ -58,8 +59,8 @@ class MyApp extends StatelessWidget {
       getPages: [
         // The main route that holds our drawer and IndexedStack
         GetPage(name: '/splash', page: () => const SplashScreen()),
-        // GetPage(name: '/login', page: () => const LoginScreen()),
-        // GetPage(name: '/signup', page: () => const SignUpScreen()),
+        GetPage(name: '/login', page: () => const LoginScreen()),
+        GetPage(name: '/signup', page: () => const SignUpScreen()),
         // GetPage(name: '/onboarding', page: () => const OnboardingScreen()), // ✅ ADDED
         GetPage(name: '/', page: () => const MainScreen()),
         GetPage(name: '/edit-profile', page: () => const EditProfileScreen()),

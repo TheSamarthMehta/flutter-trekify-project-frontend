@@ -34,9 +34,14 @@ class _SplashScreenState extends State<SplashScreen> {
     // Add a small delay for the final message
     await Future.delayed(const Duration(milliseconds: 500));
 
-    // Navigate directly to main screen (home screen)
+    // Decide where to navigate based on auth state
+    final auth = Get.find<AuthController>();
     if (mounted) {
-      Get.offAllNamed('/');
+      if (auth.isLoggedIn.isTrue) {
+        Get.offAllNamed('/');
+      } else {
+        Get.offAllNamed('/login');
+      }
     }
   }
 
