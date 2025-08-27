@@ -16,6 +16,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isSubmitting = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
@@ -123,10 +125,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           const SizedBox(height: 12),
                           TextFormField(
                             controller: _passwordController,
-                            obscureText: true,
+                            obscureText: _obscurePassword,
                             decoration: const InputDecoration(
                               labelText: 'Password',
                               prefixIcon: Icon(Icons.lock_outline),
+                            ).copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              ),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) return 'Password is required';
@@ -137,10 +144,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           const SizedBox(height: 12),
                           TextFormField(
                             controller: _confirmPasswordController,
-                            obscureText: true,
+                            obscureText: _obscureConfirmPassword,
                             decoration: const InputDecoration(
                               labelText: 'Confirm password',
                               prefixIcon: Icon(Icons.lock_reset_outlined),
+                            ).copyWith(
+                              suffixIcon: IconButton(
+                                icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
+                                onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                              ),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) return 'Confirm your password';

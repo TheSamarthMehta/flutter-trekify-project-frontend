@@ -26,8 +26,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
     final trekController = Get.find<TrekController>();
     final trekDataFuture = trekController.fetchTreks();
+    final auth = Get.find<AuthController>();
+    final autoLoginFuture = auth.tryAutoLogin();
 
-    await Future.wait([minDelayFuture, trekDataFuture]);
+    await Future.wait([minDelayFuture, trekDataFuture, autoLoginFuture]);
 
     if (mounted) setState(() => _loadingMessage = 'Almost ready...');
 
@@ -35,7 +37,6 @@ class _SplashScreenState extends State<SplashScreen> {
     await Future.delayed(const Duration(milliseconds: 500));
 
     // Decide where to navigate based on auth state
-    final auth = Get.find<AuthController>();
     if (mounted) {
       if (auth.isLoggedIn.isTrue) {
         Get.offAllNamed('/');

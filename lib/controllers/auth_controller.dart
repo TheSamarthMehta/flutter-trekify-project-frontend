@@ -1,25 +1,39 @@
 import 'package:get/get.dart';
 import 'package:trekify/services/auth_service.dart';
+import 'package:get_storage/get_storage.dart';
 
 class AuthController extends GetxController {
   var isLoggedIn = false.obs;
   var user = Rxn<Map<String, dynamic>>();
   final AuthService _authService = AuthService();
+  final GetStorage _storage = GetStorage();
 
   @override
   void onInit() {
     super.onInit();
-    // Start logged out by default
+    // Try auto-login from stored token/user
+    tryAutoLogin();
   }
 
   Future<void> tryAutoLogin() async {
-    // TODO: load from storage if needed
-    isLoggedIn.value = false;
+    final token = _storage.read('auth_token');
+    final storedUser = _storage.read('auth_user');
+    if (token != null && storedUser is Map) {
+      user.value = {
+        ...storedUser.cast<String, dynamic>(),
+        'token': token,
+      };
+      isLoggedIn.value = true;
+    } else {
+      isLoggedIn.value = false;
+    }
   }
 
   void signOut() {
     isLoggedIn.value = false;
     user.value = null;
+    _storage.remove('auth_token');
+    _storage.remove('auth_user');
     Get.offAllNamed('/login');
   }
 
@@ -33,6 +47,8 @@ class AuthController extends GetxController {
         if (backendUser != null) ...backendUser,
         if (data['token'] != null) 'token': data['token'],
       };
+      if (data['token'] != null) _storage.write('auth_token', data['token']);
+      if (backendUser != null) _storage.write('auth_user', backendUser);
       return {'success': true};
     }
     return {'success': false, 'code': result['code'], 'message': result['message']};
@@ -48,6 +64,8 @@ class AuthController extends GetxController {
         if (backendUser != null) ...backendUser,
         if (data['token'] != null) 'token': data['token'],
       };
+      if (data['token'] != null) _storage.write('auth_token', data['token']);
+      if (backendUser != null) _storage.write('auth_user', backendUser);
       return {'success': true};
     }
     return {'success': false, 'code': result['code'], 'message': result['message']};

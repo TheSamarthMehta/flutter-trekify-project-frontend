@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String _baseHost = 'http://192.168.1.103:5000';
+  final String _baseHost = 'http://10.70.19.209:5000';
 
   Uri _url(String path) => Uri.parse('$_baseHost$path');
 

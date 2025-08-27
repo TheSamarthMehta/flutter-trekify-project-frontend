@@ -29,8 +29,9 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
 
         final trek = controller.trek.value!;
         final List<String> gearList = trek.recommendedGear
-            .split(',')
-            .where((gear) => gear.trim().isNotEmpty)
+            .split(RegExp(r',|;|/'))
+            .map((g) => g.trim())
+            .where((g) => g.isNotEmpty && g.toLowerCase() != 'n/a' && g.toLowerCase() != 'na')
             .toList();
 
         return CustomScrollView(
@@ -128,12 +129,9 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
                                 'Total Distance',
                                 trek.totalDistance,
                                 Icons.directions_walk_rounded),
-                            _buildDetailRow(
-                                'Age Group', trek.ageGroup, Icons.group),
-                            _buildBooleanDetailRow('Guide Needed?',
-                                trek.guideNeeded, Icons.support_agent),
-                            _buildBooleanDetailRow(
-                                'Snow Trek?', trek.snowTrek, Icons.ac_unit),
+                            _buildDetailRow('Age Group', trek.ageGroup, Icons.group),
+                            _buildGuideRow('Guide Needed?', trek.guideNeeded, Icons.support_agent),
+                            _buildYesNoRow('Snow Trek?', trek.snowTrek, Icons.ac_unit),
                           ],
                         ),
                       ),
@@ -141,7 +139,7 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
 
                       // About This Trek Card
                       _buildDetailCard(
-                        title: 'About This Trek',
+                        title: 'Trek Description',
                         icon: Icons.article_outlined,
                         child: Text(
                           trek.description,
@@ -153,37 +151,39 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
                       ),
                       const SizedBox(height: 10),
 
-                      // Recommended Gear Card
-                      if (gearList.isNotEmpty)
-                        _buildDetailCard(
-                          title: 'Recommended Gear',
-                          icon: Icons.backpack_outlined,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: gearList.map((item) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                    bottom: 8.0),
-                                child: Row(
-                                  children: [
-                                    const Icon(
-                                        Icons.check_circle_outline,
-                                        color: Colors.teal,
-                                        size: 18),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Text(
-                                        item.trim(),
-                                        style: const TextStyle(
-                                            fontSize: 16),
-                                      ),
+                      // Recommended Gear Card (always visible)
+                      _buildDetailCard(
+                        title: 'Recommended Gear',
+                        icon: Icons.backpack_outlined,
+                        child: gearList.isEmpty
+                            ? const Text(
+                                'No specific gear listed for this trek.',
+                                style: TextStyle(fontSize: 16, color: Colors.black87),
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: gearList.map((item) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 8.0),
+                                    child: Row(
+                                      children: [
+                                        const Icon(
+                                            Icons.check_circle_outline,
+                                            color: Colors.teal,
+                                            size: 18),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            item,
+                                            style: const TextStyle(fontSize: 16),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                                  );
+                                }).toList(),
+                              ),
+                      ),
                       const SizedBox(height: 10),
 
                       // ✅ EDITED: Reviews Card now uses the main card builder
@@ -314,6 +314,80 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: value ? Colors.green.shade700 : Colors.red.shade700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildYesNoRow(String label, String value, IconData icon) {
+    final v = (value).toUpperCase();
+    final bool yes = v == 'YES' || v == 'TRUE' || v == '1';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.teal.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.teal, size: 24),
+          const SizedBox(width: 16),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600])),
+          const Spacer(),
+          Text(
+            yes ? 'Yes' : 'No',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: yes ? Colors.green.shade700 : Colors.red.shade700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGuideRow(String label, String value, IconData icon) {
+    final v = (value).toUpperCase();
+    Color color = Colors.grey.shade700;
+    String display = v;
+    if (v == 'YES' || v == 'REQUIRED') { color = Colors.red.shade700; display = 'Yes'; }
+    else if (v == 'NO' || v == 'NOT NEEDED' || v == 'NOT REQUIRED') { color = Colors.green.shade700; display = 'No'; }
+    else if (v == 'RECOMMENDED' || v == 'ADVISABLE' || v == 'ADVISED') { color = Colors.orange.shade700; display = 'Recommended'; }
+    else if (v == 'OPTIONAL' || v == 'MAYBE') { color = Colors.blueGrey.shade700; display = 'Optional'; }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.teal.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.teal, size: 24),
+          const SizedBox(width: 16),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[600])),
+          const Spacer(),
+          Text(
+            display,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: color,
             ),
           ),
         ],
