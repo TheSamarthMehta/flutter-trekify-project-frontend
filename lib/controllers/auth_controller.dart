@@ -249,6 +249,8 @@ class AuthController extends GetxController {
         ...user.value!,
         'name': name,
       };
+      // Save updated user data to storage
+      _storage.write('auth_user', user.value);
     }
   }
 

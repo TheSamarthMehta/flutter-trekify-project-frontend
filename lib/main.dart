@@ -18,6 +18,8 @@ import 'controllers/wishlist_controller.dart';
 import 'package:trekify/views/edit_profile_screen.dart';
 import 'package:trekify/views/login_screen.dart';
 import 'package:trekify/views/signup_screen.dart';
+import 'package:trekify/views/about_screen.dart';
+import 'package:trekify/views/developer_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +67,8 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/', page: () => const MainScreen()),
         GetPage(name: '/edit-profile', page: () => const EditProfileScreen()),
         GetPage(name: '/settings', page: () => const SettingsScreen()),
+        GetPage(name: '/about', page: () => const AboutScreen()),
+        GetPage(name: '/developer', page: () => const DeveloperScreen()),
         GetPage(
           name: '/trek-details',
           page: () => TrekDetailsScreen(),
