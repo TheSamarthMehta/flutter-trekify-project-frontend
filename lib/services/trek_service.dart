@@ -4,15 +4,15 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/trek_model.dart';
+import '../config/api_config.dart';
 import 'dart:developer' as developer;
 
 class TrekService {
-  final String _baseUrl = 'http://10.70.19.209:5000/api/data/';
 
   Future<Map<String, dynamic>> fetchTreks() async {
     try {
-      final response = await http.get(Uri.parse(_baseUrl)).timeout(
-        const Duration(seconds: 10), // Increased timeout for slower networks
+      final response = await http.get(Uri.parse(ApiConfig.getTrekUrl(''))).timeout(
+        ApiConfig.connectionTimeout,
         onTimeout: () {
           throw TimeoutException('The connection has timed out. Please check your IP address and network.');
         },

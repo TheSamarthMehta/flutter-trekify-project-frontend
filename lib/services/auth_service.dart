@@ -1,40 +1,60 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:trekify/config/api_config.dart';
 
 class AuthService {
-  final String _baseHost = 'http://10.70.19.209:5000';
-
-  Uri _url(String path) => Uri.parse('$_baseHost$path');
+  Uri _url(String path) => Uri.parse(ApiConfig.getAuthUrl(path));
 
   Future<Map<String, dynamic>> login({required String email, required String password}) async {
     try {
       final response = await http.post(
-        _url('/api/auth/login'),
+        _url(ApiConfig.authLogin),
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
 
       final Map<String, dynamic> body = jsonDecode(response.body);
+      
       if (response.statusCode == 200) {
         return {'success': true, 'data': body};
       }
 
-      // Treat 404/401 as needs signup or invalid creds
-      if (response.statusCode == 404 || (body['message']?.toString().toLowerCase().contains('not found') ?? false)) {
-        return {'success': false, 'code': 'needs_signup', 'message': body['message'] ?? 'Account not found'};
-      }
+      // More comprehensive error handling
+      final message = body['message']?.toString().toLowerCase() ?? '';
+      
+              // Check for account not found scenarios
+        if (response.statusCode == 404 || 
+            response.statusCode == 401 || 
+            response.statusCode == 422 ||
+            message.contains('not found') ||
+            message.contains('user not found') ||
+            message.contains('account not found') ||
+            message.contains('email not found') ||
+            message.contains('does not exist') ||
+            (response.statusCode == 400 && message.contains('invalid email or password'))) {
+          return {'success': false, 'code': 'needs_signup', 'message': 'Account not found. Please create a new account.'};
+        }
 
-      return {'success': false, 'code': 'error', 'message': body['message'] ?? 'Login failed'};
-    } catch (e) {
-      return {'success': false, 'code': 'error', 'message': e.toString()};
-    }
+        // Check for invalid password (only when we know the user exists)
+        if (response.statusCode == 400 && 
+            (message.contains('invalid password') || 
+             message.contains('wrong password') ||
+             message.contains('incorrect password'))) {
+          return {'success': false, 'code': 'invalid_password', 'message': 'Invalid password. Please check your credentials.'};
+        }
+
+        // Default error case
+        return {'success': false, 'code': 'error', 'message': body['message'] ?? 'Login failed. Please try again.'};
+      } catch (e) {
+        return {'success': false, 'code': 'error', 'message': 'Network error. Please check your connection.'};
+      }
   }
 
   Future<Map<String, dynamic>> register({required String name, required String email, required String password}) async {
     try {
       final response = await http.post(
-        _url('/api/auth/register'),
+        _url(ApiConfig.authRegister),
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );

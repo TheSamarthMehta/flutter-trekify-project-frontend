@@ -42,6 +42,29 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _passwordController.text = password;
         _confirmPasswordController.text = password;
       }
+      
+      // Show a welcome message if coming from login
+      if (email != null && email.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.snackbar(
+            '👋 Welcome!',
+            'Please complete your registration by adding your name.',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.teal.shade600,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 4),
+            margin: const EdgeInsets.all(16),
+            borderRadius: 12,
+            icon: const Icon(Icons.person_add, color: Colors.white),
+            shouldIconPulse: true,
+            barBlur: 10,
+            overlayBlur: 0.5,
+            animationDuration: const Duration(milliseconds: 500),
+            forwardAnimationCurve: Curves.easeOutBack,
+            reverseAnimationCurve: Curves.easeInBack,
+          );
+        });
+      }
     }
   }
 
@@ -54,7 +77,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (result['success'] == true) {
         Get.offAllNamed('/');
       } else {
-        Get.snackbar('Signup failed', result['message'] ?? 'Please try again');
+        Get.snackbar(
+          '❌ Signup Failed', 
+          result['message'] ?? 'Please try again',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.teal.shade600,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          icon: const Icon(Icons.error_outline, color: Colors.white),
+          shouldIconPulse: true,
+          barBlur: 10,
+          overlayBlur: 0.5,
+          animationDuration: const Duration(milliseconds: 500),
+          forwardAnimationCurve: Curves.easeOutBack,
+          reverseAnimationCurve: Curves.easeInBack,
+        );
       }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);

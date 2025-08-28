@@ -25,12 +25,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showStatDetailsDialog(BuildContext context, String title, List<String> items, String emoji) {
     if (items.isEmpty) {
       Get.snackbar(
-        title,
+        '📝 $title',
         "You haven't added any items here yet.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.black87,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.teal.shade600,
         colorText: Colors.white,
-        margin: const EdgeInsets.all(12),
+        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.info_outline, color: Colors.white),
+        shouldIconPulse: true,
+        barBlur: 10,
+        overlayBlur: 0.5,
+        animationDuration: const Duration(milliseconds: 500),
+        forwardAnimationCurve: Curves.easeOutBack,
+        reverseAnimationCurve: Curves.easeInBack,
       );
       return;
     }
@@ -130,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       child: Obx(() => Column(
         children: [
           Text(
-            authController.user.value?['name'] ?? 'Guest User',
+            authController.getCurrentUserName(),
             style: const TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
@@ -138,7 +147,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            authController.user.value?['email'] ?? 'No Email',
+            authController.getCurrentUserEmail(),
             style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
         ],
@@ -242,20 +251,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Get.toNamed('/edit-profile');
             }),
             const Divider(height: 1, indent: 16, endIndent: 16),
-            _buildOptionItem(Icons.settings_outlined, "Settings", () {
-              Get.toNamed('/settings');
-            }),
-            const Divider(height: 1, indent: 16, endIndent: 16),
-            _buildOptionItem(Icons.logout, "Log Out", () {
-              Get.defaultDialog(
-                title: "Log Out",
-                middleText: "Are you sure you want to log out?",
-                textConfirm: "Yes",
-                textCancel: "No",
-                confirmTextColor: Colors.white,
-                onConfirm: () => authController.signOut(),
-              );
-            }, color: Colors.red),
+                         _buildOptionItem(Icons.settings_outlined, "Settings", () {
+               Get.toNamed('/settings');
+             }),
+             const Divider(height: 1, indent: 16, endIndent: 16),
+             _buildOptionItem(Icons.logout, "Log Out", () {
+               Get.defaultDialog(
+                 title: "Log Out",
+                 middleText: "Are you sure you want to log out?",
+                 textConfirm: "Yes",
+                 textCancel: "No",
+                 confirmTextColor: Colors.white,
+                 onConfirm: () => authController.signOut(),
+               );
+             }, color: Colors.red),
+             const Divider(height: 1, indent: 16, endIndent: 16),
+             _buildOptionItem(Icons.clear_all, "Clear Session (Test)", () {
+               Get.defaultDialog(
+                 title: "Clear Session",
+                 middleText: "This will clear your session data and force you to login again. Useful for testing auto-logout functionality.",
+                 textConfirm: "Clear",
+                 textCancel: "Cancel",
+                 confirmTextColor: Colors.white,
+                 onConfirm: () {
+                   authController.forceClearSession();
+                   Get.back();
+                   Get.snackbar(
+                     '🧪 Session Cleared',
+                     'Your session has been cleared. You will see the login screen on next app launch.',
+                     snackPosition: SnackPosition.TOP,
+                     backgroundColor: Colors.teal.shade600,
+                     colorText: Colors.white,
+                     duration: const Duration(seconds: 3),
+                     margin: const EdgeInsets.all(16),
+                     borderRadius: 12,
+                     icon: const Icon(Icons.info_outline, color: Colors.white),
+                     shouldIconPulse: true,
+                     barBlur: 10,
+                     overlayBlur: 0.5,
+                     animationDuration: const Duration(milliseconds: 500),
+                     forwardAnimationCurve: Curves.easeOutBack,
+                     reverseAnimationCurve: Curves.easeInBack,
+                   );
+                 },
+               );
+             }, color: Colors.orange),
           ],
         ),
       ),

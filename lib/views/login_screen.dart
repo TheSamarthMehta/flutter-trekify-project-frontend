@@ -29,16 +29,89 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final auth = Get.find<AuthController>();
       final result = await auth.signIn(_emailController.text.trim(), _passwordController.text);
+      
       if (result['success'] == true) {
         Get.offAllNamed('/');
       } else if (result['code'] == 'needs_signup') {
-        Get.offAllNamed('/signup', arguments: {
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        });
+        // Show confirmation dialog before navigating to signup
+        final shouldSignup = await Get.dialog<bool>(
+          AlertDialog(
+            title: const Text('Account Not Found'),
+            content: Text('No account found with email "${_emailController.text.trim()}". Would you like to create a new account?'),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(result: false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Get.back(result: true),
+                child: const Text('Create Account'),
+              ),
+            ],
+          ),
+        );
+        
+        if (shouldSignup == true) {
+          Get.offAllNamed('/signup', arguments: {
+            'email': _emailController.text.trim(),
+            'password': _passwordController.text,
+          });
+        }
+      } else if (result['code'] == 'invalid_password') {
+        Get.snackbar(
+          '🔒 Invalid Password', 
+          result['message'] ?? 'Please check your password and try again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.teal.shade600,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          icon: const Icon(Icons.lock, color: Colors.white),
+          shouldIconPulse: true,
+          barBlur: 10,
+          overlayBlur: 0.5,
+          animationDuration: const Duration(milliseconds: 500),
+          forwardAnimationCurve: Curves.easeOutBack,
+          reverseAnimationCurve: Curves.easeInBack,
+        );
       } else {
-        Get.snackbar('Login failed', result['message'] ?? 'Please try again');
+        Get.snackbar(
+          '❌ Login Failed', 
+          result['message'] ?? 'Please try again',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.teal.shade600,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          icon: const Icon(Icons.error_outline, color: Colors.white),
+          shouldIconPulse: true,
+          barBlur: 10,
+          overlayBlur: 0.5,
+          animationDuration: const Duration(milliseconds: 500),
+          forwardAnimationCurve: Curves.easeOutBack,
+          reverseAnimationCurve: Curves.easeInBack,
+        );
       }
+    } catch (e) {
+      Get.snackbar(
+        '⚠️ Error', 
+        'An unexpected error occurred. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.teal.shade600,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.error_outline, color: Colors.white),
+        shouldIconPulse: true,
+        barBlur: 10,
+        overlayBlur: 0.5,
+        animationDuration: const Duration(milliseconds: 500),
+        forwardAnimationCurve: Curves.easeOutBack,
+        reverseAnimationCurve: Curves.easeInBack,
+      );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -137,25 +210,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: const Text('Create account'),
                     ),
                   ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: const [
-                    Expanded(child: Divider()),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Text('or'),
-                    ),
-                    Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    // Placeholder for Google sign-in integration
-                  },
-                  icon: Image.asset('assets/images/google_signin_light.png', height: 20),
-                  label: const Text('Continue with Google'),
                 ),
               ],
             ),
