@@ -1,6 +1,6 @@
 class ApiConfig {
   // 🚀 CHANGE THIS BASE URL WHEN YOUR SERVER IP CHANGES
-  static const String baseUrl = 'http://192.168.1.102:5000';
+  static const String baseUrl = 'http://10.20.72.192:5000';
   
   // API endpoints
   static const String authLogin = '/api/auth/login';
