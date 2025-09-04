@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class EnhancedSearchBar extends StatefulWidget {
   final String hintText;
   final Function(String)? onSearch;
+  final Function(String)? onSubmitted;
   final VoidCallback? onFilterTap;
   final bool showFilterButton;
 
@@ -11,6 +12,7 @@ class EnhancedSearchBar extends StatefulWidget {
     super.key,
     this.hintText = "Search for treks, mountains, trails...",
     this.onSearch,
+    this.onSubmitted,
     this.onFilterTap,
     this.showFilterButton = true,
   });
@@ -117,6 +119,8 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar>
                     controller: _controller,
                     focusNode: _focusNode,
                     onChanged: widget.onSearch,
+                    onSubmitted: widget.onSubmitted,
+                    textInputAction: TextInputAction.search,
                     decoration: InputDecoration(
                       hintText: widget.hintText,
                       hintStyle: GoogleFonts.poppins(
@@ -155,6 +159,35 @@ class _EnhancedSearchBarState extends State<EnhancedSearchBar>
                             Icons.tune,
                             color: Colors.orange.shade700,
                             size: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                
+                // Search Button (when text is present)
+                if (_controller.text.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(15),
+                        onTap: () {
+                          if (widget.onSubmitted != null) {
+                            widget.onSubmitted!(_controller.text);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.shade600,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          child: Icon(
+                            Icons.search,
+                            color: Colors.white,
+                            size: 18,
                           ),
                         ),
                       ),

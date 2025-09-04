@@ -5,22 +5,18 @@ class FeaturedTrekCard extends StatelessWidget {
   final String title;
   final String location;
   final String difficulty;
-  final String duration;
   final String rating;
   final String imageUrl;
   final VoidCallback? onTap;
-  final bool isPremium;
 
   const FeaturedTrekCard({
     super.key,
     required this.title,
     required this.location,
     required this.difficulty,
-    required this.duration,
     required this.rating,
     required this.imageUrl,
     this.onTap,
-    this.isPremium = false,
   });
 
   @override
@@ -28,98 +24,43 @@ class FeaturedTrekCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 280,
-        height: 200,
+        width: 300, // Increased width for better image display
+        height: 220, // Increased height for better proportions
         margin: const EdgeInsets.only(right: 16),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
           child: Stack(
             fit: StackFit.expand,
             children: [
-              // Background Image (placeholder for now)
+              // Background Image with proper sizing
               Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.blue.shade400,
-                      Colors.blue.shade600,
-                      Colors.blue.shade800,
-                    ],
-                  ),
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      image: NetworkImage(imageUrl),
-                      fit: BoxFit.cover,
-                      colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.3),
-                        BlendMode.darken,
-                      ),
+                  borderRadius: BorderRadius.circular(20),
+                  image: DecorationImage(
+                    image: NetworkImage(imageUrl),
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(
+                      Colors.black.withOpacity(0.2),
+                      BlendMode.darken,
                     ),
                   ),
                 ),
               ),
 
-              // Premium Badge
-              if (isPremium)
-                Positioned(
-                  top: 12,
-                  left: 12,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Colors.amber.shade400, Colors.amber.shade600],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.star,
-                          color: Colors.white,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Premium',
-                          style: GoogleFonts.poppins(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-              // Difficulty Badge
+              // Difficulty Badge (top right)
               Positioned(
                 top: 12,
                 right: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getDifficultyColor().withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(12),
+                    color: _getDifficultyColor().withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(15),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 6,
+                        offset: const Offset(0, 3),
                       ),
                     ],
                   ),
@@ -127,14 +68,14 @@ class FeaturedTrekCard extends StatelessWidget {
                     difficulty,
                     style: GoogleFonts.poppins(
                       color: Colors.white,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
 
-              // Content
+              // Content overlay at bottom
               Positioned(
                 bottom: 0,
                 left: 0,
@@ -150,20 +91,22 @@ class FeaturedTrekCard extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        Colors.black.withOpacity(0.8),
+                        Colors.black.withOpacity(0.7),
+                        Colors.black.withOpacity(0.9),
                       ],
                     ),
                   ),
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // Title
                       Text(
                         title,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           shadows: [
                             Shadow(
@@ -173,24 +116,26 @@ class FeaturedTrekCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 8),
+                      
+                      // Location
                       Row(
                         children: [
                           Icon(
                             Icons.location_on,
-                            color: Colors.white.withOpacity(0.8),
-                            size: 16,
+                            color: Colors.white.withOpacity(0.9),
+                            size: 18,
                           ),
-                          const SizedBox(width: 4),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               location,
                               style: GoogleFonts.poppins(
-                                color: Colors.white.withOpacity(0.8),
-                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 15,
                                 shadows: [
                                   Shadow(
                                     color: Colors.black54,
@@ -205,45 +150,24 @@ class FeaturedTrekCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 12),
+                      
+                      // Rating only (no duration)
                       Row(
                         children: [
-                          // Duration
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.access_time,
-                                color: Colors.white.withOpacity(0.7),
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                duration,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white.withOpacity(0.7),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
+                          Icon(
+                            Icons.star,
+                            color: Colors.amber.shade400,
+                            size: 18,
                           ),
-                          const SizedBox(width: 16),
-                          // Rating
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                color: Colors.amber.shade400,
-                                size: 14,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                rating,
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white.withOpacity(0.7),
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
+                          const SizedBox(width: 6),
+                          Text(
+                            rating,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white.withOpacity(0.9),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -279,13 +203,13 @@ class FeaturedTrekCard extends StatelessWidget {
   Color _getDifficultyColor() {
     switch (difficulty.toLowerCase()) {
       case 'easy':
-        return Colors.green;
+        return Colors.green.shade600;
       case 'moderate':
-        return Colors.orange;
+        return Colors.orange.shade600;
       case 'difficult':
-        return Colors.red;
+        return Colors.red.shade600;
       default:
-        return Colors.blue;
+        return Colors.blue.shade600;
     }
   }
 }

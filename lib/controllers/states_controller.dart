@@ -23,8 +23,87 @@ class StatesController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // General state info is not user-specific, so it can load on init
-    _initializeStates();
+    // Initialize states with trek data
+    initializeStatesWithTreks();
+  }
+
+  /// Initialize basic state data without TrekController dependency
+  void _initializeBasicStates() {
+    stateList.value = [];
+    isLoading.value = false;
+  }
+
+  /// Initialize states with trek data when TrekController is available
+  Future<void> initializeStatesWithTreks() async {
+    try {
+      print('🔄 Starting states initialization...');
+      isLoading.value = true;
+      
+      // Check if TrekController has data
+      print('📊 TrekController has ${_trekController.allTreks.length} treks');
+      
+      if (_trekController.allTreks.isEmpty) {
+        print('📥 Fetching treks from API...');
+        await _trekController.fetchTreks();
+        print('📊 After fetch: ${_trekController.allTreks.length} treks');
+      }
+      
+      _prepareStateList();
+      
+      // If no states found from API, use fallback states
+      if (stateList.isEmpty) {
+        print('⚠️ No states found from API, using fallback states');
+        _initializeFallbackStates();
+      }
+      
+      print('✅ States initialization completed. Total states: ${stateList.length}');
+    } catch (e) {
+      print('⚠️ Error initializing states with treks: $e');
+      // Use fallback states if API fails
+      _initializeFallbackStates();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Initialize fallback states if API data is not available
+  void _initializeFallbackStates() {
+    stateList.value = [
+      StateUIModel(name: 'Himachal Pradesh', imageUrl: ''),
+      StateUIModel(name: 'Uttarakhand', imageUrl: ''),
+      StateUIModel(name: 'Jammu & Kashmir', imageUrl: ''),
+      StateUIModel(name: 'Sikkim', imageUrl: ''),
+      StateUIModel(name: 'Arunachal Pradesh', imageUrl: ''),
+      StateUIModel(name: 'Meghalaya', imageUrl: ''),
+      StateUIModel(name: 'Nagaland', imageUrl: ''),
+      StateUIModel(name: 'Manipur', imageUrl: ''),
+      StateUIModel(name: 'Mizoram', imageUrl: ''),
+      StateUIModel(name: 'Tripura', imageUrl: ''),
+      StateUIModel(name: 'Assam', imageUrl: ''),
+      StateUIModel(name: 'West Bengal', imageUrl: ''),
+      StateUIModel(name: 'Odisha', imageUrl: ''),
+      StateUIModel(name: 'Jharkhand', imageUrl: ''),
+      StateUIModel(name: 'Bihar', imageUrl: ''),
+      StateUIModel(name: 'Uttar Pradesh', imageUrl: ''),
+      StateUIModel(name: 'Madhya Pradesh', imageUrl: ''),
+      StateUIModel(name: 'Chhattisgarh', imageUrl: ''),
+      StateUIModel(name: 'Rajasthan', imageUrl: ''),
+      StateUIModel(name: 'Gujarat', imageUrl: ''),
+      StateUIModel(name: 'Maharashtra', imageUrl: ''),
+      StateUIModel(name: 'Goa', imageUrl: ''),
+      StateUIModel(name: 'Karnataka', imageUrl: ''),
+      StateUIModel(name: 'Kerala', imageUrl: ''),
+      StateUIModel(name: 'Tamil Nadu', imageUrl: ''),
+      StateUIModel(name: 'Andhra Pradesh', imageUrl: ''),
+      StateUIModel(name: 'Telangana', imageUrl: ''),
+    ];
+    print('✅ Initialized ${stateList.length} fallback states');
+  }
+
+  /// Manually refresh states data
+  Future<void> refreshStates() async {
+    print('🔄 Manual refresh triggered');
+    await initializeStatesWithTreks();
   }
 
   /// ✅ NEW: Loads explored treks for a specific user.
@@ -129,44 +208,65 @@ class StatesController extends GetxController {
 
   // --- Other methods like _initializeStates, getTreksForState, getCompletionPercentage remain the same ---
 
-  Future<void> _initializeStates() async {
-    isLoading.value = true;
-    await _trekController.fetchTreks();
-    _prepareStateList();
-    isLoading.value = false;
-  }
-
   void _prepareStateList() {
-    if (_trekController.allTreks.isEmpty) {
-      stateList.value = [];
-      return;
-    }
-    final treks = _trekController.allTreks;
-    final Map<String, String> statesMap = {};
-    for (Trek trek in treks) {
-      final stateName = trek.state.trim();
-      if (stateName.isNotEmpty && !statesMap.containsKey(stateName) && trek.imageUrl.isNotEmpty) {
-        statesMap[stateName] = trek.imageUrl;
+    try {
+      if (_trekController.allTreks.isEmpty) {
+        print('⚠️ No treks available from TrekController');
+        return;
       }
+      
+      final treks = _trekController.allTreks;
+      print('📊 Found ${treks.length} treks from TrekController');
+      
+      final Map<String, String> statesMap = {};
+      for (Trek trek in treks) {
+        final stateName = trek.state?.trim() ?? '';
+        if (stateName.isNotEmpty) {
+          if (!statesMap.containsKey(stateName)) {
+            statesMap[stateName] = trek.imageUrl ?? '';
+          }
+        }
+      }
+      
+      print('🗺️ Found ${statesMap.length} unique states from trek data');
+      
+      if (statesMap.isNotEmpty) {
+        stateList.value = statesMap.entries
+            .map((entry) => StateUIModel(name: entry.key, imageUrl: entry.value))
+            .toList()
+          ..sort((a, b) => a.name.compareTo(b.name));
+        print('✅ Successfully prepared state list with ${stateList.length} states');
+      } else {
+        print('⚠️ No valid states found in trek data');
+      }
+    } catch (e) {
+      print('⚠️ Error preparing state list: $e');
+      stateList.value = [];
     }
-    stateList.value = statesMap.entries
-        .map((entry) => StateUIModel(name: entry.key, imageUrl: entry.value))
-        .toList()
-      ..sort((a, b) => a.name.compareTo(b.name));
   }
 
   List<Trek> getTreksForState(String stateName) {
-    return _trekController.allTreks
-        .where((trek) => trek.state == stateName)
-        .toList();
+    try {
+      return _trekController.allTreks
+          .where((trek) => trek.state == stateName)
+          .toList();
+    } catch (e) {
+      print('⚠️ Error getting treks for state: $e');
+      return [];
+    }
   }
 
   double getCompletionPercentage(String stateName) {
-    final treksInState = getTreksForState(stateName);
-    if (treksInState.isEmpty) return 0.0;
-    final exploredCount = treksInState
-        .where((trek) => exploredTreks.contains(trek.trekName))
-        .length;
-    return (exploredCount / treksInState.length);
+    try {
+      final treksInState = getTreksForState(stateName);
+      if (treksInState.isEmpty) return 0.0;
+      final exploredCount = treksInState
+          .where((trek) => exploredTreks.contains(trek.trekName))
+          .length;
+      return (exploredCount / treksInState.length);
+    } catch (e) {
+      print('⚠️ Error calculating completion percentage: $e');
+      return 0.0;
+    }
   }
 }

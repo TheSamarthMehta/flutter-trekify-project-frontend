@@ -4,12 +4,16 @@ import 'package:http/http.dart' as http;
 import 'package:trekify/config/api_config.dart';
 
 class AuthService {
-  Uri _url(String path) => Uri.parse(ApiConfig.getAuthUrl(path));
+  Future<Uri> _url(String path) async {
+    final baseUrl = await ApiConfig.getAuthUrl(path);
+    return Uri.parse(baseUrl);
+  }
 
   Future<Map<String, dynamic>> login({required String email, required String password}) async {
     try {
+      final uri = await _url(ApiConfig.authLogin);
       final response = await http.post(
-        _url(ApiConfig.authLogin),
+        uri,
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
@@ -53,8 +57,9 @@ class AuthService {
 
   Future<Map<String, dynamic>> register({required String name, required String email, required String password}) async {
     try {
+      final uri = await _url(ApiConfig.authRegister);
       final response = await http.post(
-        _url(ApiConfig.authRegister),
+        uri,
         headers: {HttpHeaders.contentTypeHeader: 'application/json'},
         body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );

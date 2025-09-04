@@ -33,14 +33,15 @@ void main() async{
   ]);
   // ✅ Register your service first
   Get.lazyPut<TrekService>(() => TrekService());
-  Get.put(AuthController());
-  Get.put(AppDrawerController());
-  Get.put(HomeController());
-  Get.put(TrekController());
+  
+  // Initialize controllers in dependency order
   Get.put(WishlistController());
-  Get.put(StatesController());
   Get.put(ItineraryController());
-  // Get.put(OnboardingController());
+  Get.put(TrekController()); // Move TrekController before StatesController
+  Get.put(StatesController()); // Now TrekController exists
+  Get.put(HomeController());
+  Get.put(AppDrawerController());
+  Get.put(AuthController()); // AuthController needs to be last since it depends on others
   runApp(const MyApp());
 }
 

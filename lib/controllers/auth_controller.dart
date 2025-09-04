@@ -173,6 +173,13 @@ class AuthController extends GetxController {
         itineraryController.loadItineraryForUser(userId);
         statesController.loadExploredTreksForUser(userId);
         
+        // Initialize states with trek data when all controllers are ready
+        try {
+          await statesController.initializeStatesWithTreks();
+        } catch (e) {
+          print('⚠️ Could not initialize states with treks: $e');
+        }
+        
         // Debug: Print current state
         printCurrentState();
         checkAllControllersStatus();

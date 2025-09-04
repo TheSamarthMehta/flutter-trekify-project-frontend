@@ -67,16 +67,50 @@ class TrekController extends GetxController {
   Future<void> fetchTreks() async {
     isLoading(true);
     errorMessage.value = null;
-    final result = await _trekService.fetchTreks();
-    isLoading(false);
-    if (result['success'] == true) {
-      final treks = result['data'] as List<Trek>;
-      allTreks.assignAll(treks);
-      applyFilters();
-    } else {
-      errorMessage.value = result['error'];
-      developer.log('Error fetching treks: ${errorMessage.value}', name: 'TrekController');
+    
+    try {
+      developer.log('Starting to fetch treks...', name: 'TrekController');
+      
+      final result = await _trekService.fetchTreks();
+      
+      if (result['success'] == true) {
+        final treks = result['data'] as List<Trek>;
+        allTreks.assignAll(treks);
+        applyFilters();
+        developer.log('Successfully loaded ${treks.length} treks', name: 'TrekController');
+      } else {
+        errorMessage.value = result['error'];
+        developer.log('Error fetching treks: ${errorMessage.value}', name: 'TrekController');
+        
+        // Show user-friendly error message
+        _showErrorSnackbar(result['error']);
+      }
+    } catch (e) {
+      developer.log('Exception in fetchTreks: $e', name: 'TrekController');
+      errorMessage.value = 'An unexpected error occurred. Please try again.';
+      _showErrorSnackbar('An unexpected error occurred. Please try again.');
+    } finally {
+      isLoading(false);
     }
+  }
+
+  /// Show error message to user
+  void _showErrorSnackbar(String message) {
+    Get.snackbar(
+      'Connection Error',
+      message,
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.red.shade100,
+      colorText: Colors.red.shade900,
+      duration: const Duration(seconds: 4),
+      icon: const Icon(Icons.error_outline, color: Colors.red),
+    );
+  }
+
+  /// Retry fetching treks
+  Future<void> retryFetchTreks() async {
+    developer.log('Retrying to fetch treks...', name: 'TrekController');
+    await fetchTreks();
   }
 
   void applyQuickFilter({String? difficulty, String? season, String? type, String? state}) {
