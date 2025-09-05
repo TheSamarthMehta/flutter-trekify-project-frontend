@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:intl/intl.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:trekify/controllers/trek_details_controller.dart';
-import 'package:trekify/models/review_model.dart';
 import 'package:trekify/controllers/wishlist_controller.dart';
 
 import '../controllers/iternary_controllers.dart';
@@ -21,10 +21,13 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: Obx(() {
+      backgroundColor: Colors.grey.shade50,
+      extendBodyBehindAppBar: true,
+      body: SafeArea(
+        top: false,
+        child: Obx(() {
         if (controller.trek.value == null) {
-          return const Center(child: CircularProgressIndicator());
+          return _buildLoadingState();
         }
 
         final trek = controller.trek.value!;
@@ -36,40 +39,77 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
 
         return CustomScrollView(
           slivers: [
+            // Enhanced Hero Header
             SliverAppBar(
-              expandedHeight: 280.0,
+              expandedHeight: 350.0,
               pinned: true,
               stretch: true,
-              backgroundColor: Colors.teal,
-              iconTheme: const IconThemeData(color: Colors.white),
-              flexibleSpace: FlexibleSpaceBar(
-                stretchModes: const [StretchMode.zoomBackground],
-                title: Text(
-                  trek.trekName,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: Container(
+                margin: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                centerTitle: true,
-                titlePadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+                  onPressed: () => Get.back(),
+                ),
+              ),
+              actions: [
+                Container(
+                  margin: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Obx(() => IconButton(
+                    icon: Icon(
+                      wishlistController.isInWishlist(trek)
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      color: wishlistController.isInWishlist(trek)
+                          ? Colors.redAccent
+                          : Colors.white,
+                    ),
+                    onPressed: () {
+                      wishlistController.toggleWishlist(trek);
+                    },
+                  )),
+                ),
+              ],
+              flexibleSpace: FlexibleSpaceBar(
+                stretchModes: const [StretchMode.zoomBackground, StretchMode.blurBackground],
                 background: Stack(
                   fit: StackFit.expand,
                   children: [
+                    // Hero Image
                     CachedNetworkImage(
                       imageUrl: trek.imageUrl,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Shimmer.fromColors(
                         baseColor: Colors.grey[300]!,
                         highlightColor: Colors.grey[100]!,
-                        child: Container(color: Colors.white),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Colors.grey[300]!, Colors.grey[100]!],
+                            ),
+                          ),
+                        ),
                       ),
                       errorWidget: (context, url, error) => Container(
-                          color: Colors.grey,
-                          child: const Icon(Icons.broken_image,
-                              color: Colors.white, size: 50)),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Colors.grey[400]!, Colors.grey[300]!],
+                          ),
+                        ),
+                        child: const Icon(Icons.broken_image, color: Colors.white, size: 50),
+                      ),
                     ),
+                    
+                    // Gradient Overlay
                     Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
@@ -77,119 +117,134 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withOpacity(0.2),
+                            Colors.black.withOpacity(0.1),
+                            Colors.black.withOpacity(0.3),
                             Colors.black.withOpacity(0.7),
                           ],
-                          stops: const [0.5, 0.7, 1.0],
+                          stops: const [0.0, 0.3, 0.7, 1.0],
                         ),
+                      ),
+                    ),
+                    
+                    // Trek Name Overlay
+                    Positioned(
+                      bottom: 20,
+                      left: 20,
+                      right: 20,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: _getDifficultyColor(trek.difficulty).withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              trek.difficulty,
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            trek.trekName,
+                            style: GoogleFonts.poppins(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.5),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on_rounded, color: Colors.white.withOpacity(0.9), size: 16),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${trek.state}, ${trek.district}',
+                                style: GoogleFonts.poppins(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
                   ],
                 ),
               ),
-              actions: [
-                Obx(() => IconButton(
-                  icon: Icon(
-                    wishlistController.isInWishlist(trek)
-                        ? Icons.favorite_rounded
-                        : Icons.favorite_border_rounded,
-                    color: wishlistController.isInWishlist(trek)
-                        ? Colors.redAccent
-                        : Colors.white,
-                  ),
-                  onPressed: () {
-                    wishlistController.toggleWishlist(trek);
-                  },
-                )),
-              ],
             ),
             SliverList(
               delegate: SliverChildListDelegate([
+                // Quick Stats Section
+                _buildQuickStatsSection(trek),
+                
+                // Main Content
                 Padding(
-                  padding: const EdgeInsets.all(12.0),
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                   child: Column(
                     children: [
                       // Trek Details Card
-                      _buildDetailCard(
-                        title: 'Trek Details',
-                        icon: Icons.list_alt_rounded,
-                        child: Column(
-                          children: [
-                            _buildDetailRow(
-                                'State', trek.state, Icons.map_outlined),
-                            _buildDetailRow('District', trek.district,
-                                Icons.location_city_outlined),
-                            _buildDetailRow('Difficulty', trek.difficulty,
-                                Icons.trending_up_rounded),
-                            _buildDetailRow('Altitude', trek.altitude,
-                                Icons.landscape_outlined),
-                            _buildDetailRow('Best Season', trek.season,
-                                Icons.wb_sunny_outlined),
-                            _buildDetailRow(
-                                'Total Distance',
-                                trek.totalDistance,
-                                Icons.directions_walk_rounded),
-                            _buildDetailRow('Age Group', trek.ageGroup, Icons.group),
-                            _buildGuideRow('Guide Needed?', trek.guideNeeded, Icons.support_agent),
-                            _buildYesNoRow('Snow Trek?', trek.snowTrek, Icons.ac_unit),
-                          ],
-                        ),
+                      _buildModernDetailCard(
+                        title: 'Trek Information',
+                        icon: Icons.info_outline_rounded,
+                        color: Colors.blue,
+                        child: _buildModernDetailGrid(trek),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
 
                       // About This Trek Card
-                      _buildDetailCard(
-                        title: 'Trek Description',
+                      _buildModernDetailCard(
+                        title: 'About This Trek',
                         icon: Icons.article_outlined,
+                        color: Colors.green,
                         child: Text(
                           trek.description,
-                          style: const TextStyle(
-                              fontSize: 16,
-                              height: 1.5,
-                              color: Colors.black87),
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            height: 1.6,
+                            color: Colors.grey.shade700,
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
 
-                      // Recommended Gear Card (always visible)
-                      _buildDetailCard(
-                        title: 'Recommended Gear',
+                      // Recommended Gear Card
+                      _buildModernDetailCard(
+                        title: 'Essential Gear',
                         icon: Icons.backpack_outlined,
+                        color: Colors.orange,
                         child: gearList.isEmpty
-                            ? const Text(
-                                'No specific gear listed for this trek.',
-                                style: TextStyle(fontSize: 16, color: Colors.black87),
+                            ? Container(
+                                padding: const EdgeInsets.all(20),
+                                child: Text(
+                                  'No specific gear requirements listed for this trek.',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade600,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               )
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: gearList.map((item) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                            Icons.check_circle_outline,
-                                            color: Colors.teal,
-                                            size: 18),
-                                        const SizedBox(width: 10),
-                                        Expanded(
-                                          child: Text(
-                                            item,
-                                            style: const TextStyle(fontSize: 16),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                              ),
+                            : _buildGearGrid(gearList),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 16),
 
-                      // ✅ EDITED: Reviews Card now uses the main card builder
-                      Obx(() => _buildReviewCard(context, controller.reviews)),
-
-                      const SizedBox(height: 80),
+                      const SizedBox(height: 100), // Space for FAB
                     ],
                   ),
                 ),
@@ -197,53 +252,368 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
             ),
           ],
         );
-      }),
+        }),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          itineraryController.addToItinerary(controller.trek.value!);
-        },
-        label: const Text('ADD TO ITINERARY'),
-        icon: const Icon(Icons.add_location_alt_outlined),
-        backgroundColor: Colors.teal,
-        foregroundColor: Colors.white,
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.teal.withOpacity(0.3),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            itineraryController.addToItinerary(controller.trek.value!);
+            Get.snackbar(
+              'Added to Itinerary',
+              '${controller.trek.value!.trekName} has been added to your itinerary',
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Colors.teal,
+              colorText: Colors.white,
+              margin: const EdgeInsets.all(16),
+              borderRadius: 12,
+              icon: const Icon(Icons.check_circle, color: Colors.white),
+            );
+          },
+          label: Text(
+            'ADD TO ITINERARY',
+            style: GoogleFonts.poppins(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          icon: const Icon(Icons.add_location_alt_rounded),
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
       ),
     );
   }
 
   // --- HELPER WIDGETS ---
 
-  Widget _buildDetailCard(
-      {required String title, required IconData icon, required Widget child}) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      clipBehavior: Clip.antiAlias,
-      elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.2),
+  Widget _buildLoadingState() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Colors.teal.shade400, Colors.teal.shade600],
+        ),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickStatsSection(trek) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Colors.teal.shade400, Colors.teal.shade600],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.teal.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildStatItem(
+              icon: Icons.landscape_rounded,
+              label: 'Altitude',
+              value: trek.altitude,
+              color: Colors.white,
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: Colors.white.withOpacity(0.3),
+          ),
+          Expanded(
+            child: _buildStatItem(
+              icon: Icons.directions_walk_rounded,
+              label: 'Distance',
+              value: trek.totalDistance,
+              color: Colors.white,
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: Colors.white.withOpacity(0.3),
+          ),
+          Expanded(
+            child: _buildStatItem(
+              icon: Icons.group_rounded,
+              label: 'Age Group',
+              value: trek.ageGroup,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 24),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: GoogleFonts.poppins(
+            color: color,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: GoogleFonts.poppins(
+            color: color.withOpacity(0.9),
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernDetailCard({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required Widget child,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            color: Colors.teal,
-            child: Row(children: [
-              Icon(icon, color: Colors.white, size: 20),
-              const SizedBox(width: 10),
-              Text(title,
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold))
-            ]),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: color, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+              ],
+            ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: child,
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildModernDetailGrid(trek) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildModernDetailItem(
+                icon: Icons.map_rounded,
+                label: 'State',
+                value: trek.state,
+                color: Colors.blue,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildModernDetailItem(
+                icon: Icons.location_city_rounded,
+                label: 'District',
+                value: trek.district,
+                color: Colors.green,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildModernDetailItem(
+                icon: Icons.trending_up_rounded,
+                label: 'Difficulty',
+                value: trek.difficulty,
+                color: _getDifficultyColor(trek.difficulty),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildModernDetailItem(
+                icon: Icons.wb_sunny_rounded,
+                label: 'Best Season',
+                value: trek.season,
+                color: Colors.orange,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _buildModernDetailItem(
+                icon: Icons.support_agent_rounded,
+                label: 'Guide',
+                value: _formatGuideValue(trek.guideNeeded),
+                color: _getGuideColor(trek.guideNeeded),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildModernDetailItem(
+                icon: Icons.ac_unit_rounded,
+                label: 'Snow Trek',
+                value: _formatYesNo(trek.snowTrek),
+                color: _getYesNoColor(trek.snowTrek),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModernDetailItem({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: GoogleFonts.poppins(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: GoogleFonts.poppins(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGearGrid(List<String> gearList) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: gearList.map((item) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.check_circle_rounded, color: Colors.orange, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                item,
+                style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.orange.shade700,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 
@@ -387,228 +757,53 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
     );
   }
 
-  // ✅ EDITED: This now uses the main _buildDetailCard for a consistent look
-  Widget _buildReviewCard(BuildContext context, List<Review> reviews) {
-    return _buildDetailCard(
-      title: "Reviews",
-      icon: Icons.reviews_outlined,
-      child: Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: () => _showWriteReviewDialog(context),
-              icon: const Icon(Icons.edit_note_outlined),
-              label: const Text("Write a review"),
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: Colors.teal.shade300),
-                foregroundColor: Colors.teal.shade700,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ),
-          const Divider(height: 32),
-          SizedBox(
-            height: 220, // Height for the horizontal scroller
-            child: reviews.isEmpty
-                ? const Center(
-                child: Text("Be the first to share your experience!",
-                    style: TextStyle(fontSize: 16, color: Colors.grey)))
-                : PageView.builder(
-              controller: PageController(
-                viewportFraction: 0.9,
-              ),
-              itemCount: reviews.length,
-              itemBuilder: (context, index) {
-                return _buildModernReviewCard(reviews[index]);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+
+  // Utility methods
+  Color _getDifficultyColor(String difficulty) {
+    switch (difficulty.toLowerCase()) {
+      case 'easy':
+        return Colors.green;
+      case 'moderate':
+        return Colors.orange;
+      case 'difficult':
+        return Colors.red;
+      case 'easy to moderate':
+        return Colors.lightGreen;
+      case 'moderate to difficult':
+        return Colors.deepOrange;
+      default:
+        return Colors.blue;
+    }
   }
 
-  // This modern review card stays the same
-  Widget _buildModernReviewCard(Review review) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 2,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Colors.teal.withOpacity(0.1),
-                child: Text(
-                  review.userName.isNotEmpty ? review.userName[0].toUpperCase() : 'U',
-                  style: const TextStyle(
-                      color: Colors.teal,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      review.userName,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 17),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      DateFormat('MMMM d, yyyy').format(review.timestamp),
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                children: List.generate(
-                  review.rating,
-                      (index) => Icon(
-                    Icons.star_rounded,
-                    color: Colors.amber.shade600,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.0),
-            child: Divider(),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Text(
-                '"${review.comment}"',
-                style: TextStyle(
-                  color: Colors.black.withOpacity(0.7),
-                  height: 1.5,
-                  fontSize: 15,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+  String _formatGuideValue(String value) {
+    final v = value.toUpperCase();
+    if (v == 'YES' || v == 'REQUIRED') return 'Required';
+    if (v == 'NO' || v == 'NOT NEEDED' || v == 'NOT REQUIRED') return 'Not Required';
+    if (v == 'RECOMMENDED' || v == 'ADVISABLE' || v == 'ADVISED') return 'Recommended';
+    if (v == 'OPTIONAL' || v == 'MAYBE') return 'Optional';
+    return value;
   }
 
-  void _showWriteReviewDialog(BuildContext context) {
-    final TextEditingController nameController = TextEditingController();
-    final TextEditingController commentController = TextEditingController();
-    final RxInt rating = 0.obs;
-
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Share Your Experience'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Your Name',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person_outline),
-                ),
-                textCapitalization: TextCapitalization.words,
-              ),
-              const SizedBox(height: 20),
-              const Text("Tap a star to rate", style: TextStyle(fontSize: 16)),
-              Obx(() => Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(5, (index) {
-                  return IconButton(
-                    onPressed: () => rating.value = index + 1,
-                    icon: Icon(
-                      index < rating.value
-                          ? Icons.star_rounded
-                          : Icons.star_border_rounded,
-                      color: Colors.amber.shade600,
-                      size: 36,
-                    ),
-                  );
-                }),
-              )),
-              const SizedBox(height: 16),
-              TextField(
-                controller: commentController,
-                decoration: const InputDecoration(
-                  labelText: 'Your Review',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.comment_outlined),
-                ),
-                textCapitalization: TextCapitalization.sentences,
-                maxLines: 4,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('CANCEL'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            onPressed: () {
-              if (nameController.text.isNotEmpty &&
-                  commentController.text.isNotEmpty &&
-                  rating.value > 0) {
-                final newReview = Review(
-                  userName: nameController.text,
-                  rating: rating.value,
-                  comment: commentController.text,
-                  timestamp: DateTime.now(),
-                );
-                controller.addReview(newReview);
-                Get.back();
-              } else {
-                Get.snackbar(
-                  'Incomplete',
-                  'Please fill all fields and provide a rating.',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.red.shade600,
-                  colorText: Colors.white,
-                  margin: const EdgeInsets.all(12),
-                );
-              }
-            },
-            child: const Text('SUBMIT'),
-          ),
-        ],
-      ),
-    );
+  Color _getGuideColor(String value) {
+    final v = value.toUpperCase();
+    if (v == 'YES' || v == 'REQUIRED') return Colors.red;
+    if (v == 'NO' || v == 'NOT NEEDED' || v == 'NOT REQUIRED') return Colors.green;
+    if (v == 'RECOMMENDED' || v == 'ADVISABLE' || v == 'ADVISED') return Colors.orange;
+    if (v == 'OPTIONAL' || v == 'MAYBE') return Colors.blueGrey;
+    return Colors.grey;
   }
+
+  String _formatYesNo(String value) {
+    final v = value.toUpperCase();
+    if (v == 'YES' || v == 'TRUE' || v == '1') return 'Yes';
+    return 'No';
+  }
+
+  Color _getYesNoColor(String value) {
+    final v = value.toUpperCase();
+    if (v == 'YES' || v == 'TRUE' || v == '1') return Colors.blue;
+    return Colors.grey;
+  }
+
 }

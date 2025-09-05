@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:trekify/utils/snackbar_helper.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -12,10 +13,6 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _isDarkMode = false;
   bool _notificationsEnabled = true;
-  bool _locationEnabled = true;
-  bool _autoSaveEnabled = true;
-  String _selectedLanguage = 'English';
-  double _fontSize = 16.0;
 
   @override
   void initState() {
@@ -39,55 +36,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade50,
       appBar: AppBar(
-        title: const Text('Settings'),
-        backgroundColor: Colors.teal,
+        title: Text(
+          'Settings',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        backgroundColor: const Color(0xFF059669),
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          TextButton(
-            onPressed: _saveSettings,
-            child: const Text(
-              'Save',
-              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Get.back(),
+        ),
       ),
-      backgroundColor: Colors.grey[50],
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Appearance Section
-            _buildSectionHeader('Appearance'),
-            _buildAppearanceSettings(),
-            const SizedBox(height: 24),
+            // GENERAL Section
+            _buildSectionHeader('GENERAL'),
+            _buildGeneralSection(),
+            const SizedBox(height: 32),
             
-            // Notifications Section
-            _buildSectionHeader('Notifications'),
-            _buildNotificationSettings(),
-            const SizedBox(height: 24),
+            // ACCOUNT Section
+            _buildSectionHeader('ACCOUNT'),
+            _buildAccountSection(),
+            const SizedBox(height: 32),
             
-            // Privacy & Security Section
-            _buildSectionHeader('Privacy & Security'),
-            _buildPrivacySettings(),
-            const SizedBox(height: 24),
-            
-            // App Settings Section
-            _buildSectionHeader('App Settings'),
-            _buildAppSettings(),
-            const SizedBox(height: 24),
-            
-            // Support Section
-            _buildSectionHeader('Support'),
-            _buildSupportSettings(),
-            const SizedBox(height: 24),
-            
-            // About Section
-            _buildSectionHeader('About'),
-            _buildAboutSettings(),
+            // ABOUT Section
+            _buildSectionHeader('ABOUT'),
+            _buildAboutSection(),
           ],
         ),
       ),
@@ -96,148 +80,118 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildSectionHeader(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.teal,
+        style: GoogleFonts.poppins(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF059669),
+          letterSpacing: 0.5,
         ),
       ),
     );
   }
 
-  Widget _buildAppearanceSettings() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildGeneralSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          // Dark Mode Toggle
-          SwitchListTile(
-            title: const Text('Dark Mode'),
-            subtitle: const Text('Switch between light and dark theme'),
-            value: _isDarkMode,
-            onChanged: (value) {
-              setState(() {
-                _isDarkMode = value;
-              });
-              _toggleTheme(value);
-            },
-            secondary: Icon(
-              _isDarkMode ? Icons.dark_mode : Icons.light_mode,
-              color: Colors.teal,
-            ),
+          // Appearance - Only Dark/Light Mode
+          _buildSettingItem(
+            icon: Icons.palette,
+            title: 'Appearance',
+            subtitle: 'Light and Dark Mode',
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            onTap: _showAppearanceDialog,
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
           
-          // Font Size Slider
-          ListTile(
-            title: const Text('Font Size'),
-            subtitle: Text('${_fontSize.round()}px'),
-            leading: const Icon(Icons.text_fields, color: Colors.teal),
-            trailing: SizedBox(
-              width: 100,
-              child: Slider(
-                value: _fontSize,
-                min: 12.0,
-                max: 24.0,
-                divisions: 12,
-                label: '${_fontSize.round()}px',
-                onChanged: (value) {
-                  setState(() {
-                    _fontSize = value;
-                  });
-                },
-              ),
+          // Push Notifications
+          _buildSettingItem(
+            icon: Icons.notifications,
+            title: 'Push Notifications',
+            subtitle: 'Receive updates and alerts',
+            trailing: Switch(
+              value: _notificationsEnabled,
+              onChanged: (value) {
+                setState(() {
+                  _notificationsEnabled = value;
+                });
+                SnackbarHelper.showSuccess(
+                  'Notifications',
+                  _notificationsEnabled ? 'Notifications enabled!' : 'Notifications disabled!',
+                );
+              },
+              activeColor: const Color(0xFF059669),
             ),
-          ),
-          
-          // Language Selection
-          ListTile(
-            title: const Text('Language'),
-            subtitle: Text(_selectedLanguage),
-            leading: const Icon(Icons.language, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: _showLanguageDialog,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildNotificationSettings() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildAccountSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          SwitchListTile(
-            title: const Text('Push Notifications'),
-            subtitle: const Text('Receive notifications about new treks and updates'),
-            value: _notificationsEnabled,
-            onChanged: (value) {
-              setState(() {
-                _notificationsEnabled = value;
-              });
-            },
-            secondary: const Icon(Icons.notifications, color: Colors.teal),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Notification Sound'),
-            subtitle: const Text('Play sound for notifications'),
-            leading: const Icon(Icons.volume_up, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              SnackbarHelper.showInfo(
-                'Coming Soon',
-                'Notification sound settings will be available soon!',
-              );
-            },
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Notification Schedule'),
-            subtitle: const Text('Set quiet hours for notifications'),
-            leading: const Icon(Icons.schedule, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              SnackbarHelper.showInfo(
-                'Coming Soon',
-                'Notification schedule settings will be available soon!',
-              );
-            },
+          // Delete Account
+          _buildSettingItem(
+            icon: Icons.delete,
+            title: 'Delete Account',
+            subtitle: null,
+            trailing: null,
+            isDestructive: true,
+            onTap: _showDeleteAccountDialog,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPrivacySettings() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildAboutSection() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
       child: Column(
         children: [
-          SwitchListTile(
-            title: const Text('Location Services'),
-            subtitle: const Text('Allow app to access your location'),
-            value: _locationEnabled,
-            onChanged: (value) {
-              setState(() {
-                _locationEnabled = value;
-              });
-            },
-            secondary: const Icon(Icons.location_on, color: Colors.teal),
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Privacy Policy'),
-            subtitle: const Text('Read our privacy policy'),
-            leading: const Icon(Icons.privacy_tip, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          // Privacy Policy
+          _buildSettingItem(
+            icon: Icons.privacy_tip,
+            title: 'Privacy Policy',
+            subtitle: null,
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
             onTap: () {
               SnackbarHelper.showInfo(
                 'Privacy Policy',
@@ -246,11 +200,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
             },
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Terms of Service'),
-            subtitle: const Text('Read our terms of service'),
-            leading: const Icon(Icons.description, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          
+          // Terms of Service
+          _buildSettingItem(
+            icon: Icons.description,
+            title: 'Terms of Service',
+            subtitle: null,
+            trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
             onTap: () {
               SnackbarHelper.showInfo(
                 'Terms of Service',
@@ -258,136 +214,84 @@ class _SettingsScreenState extends State<SettingsScreen> {
               );
             },
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppSettings() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        children: [
-          SwitchListTile(
-            title: const Text('Auto Save'),
-            subtitle: const Text('Automatically save your progress'),
-            value: _autoSaveEnabled,
-            onChanged: (value) {
-              setState(() {
-                _autoSaveEnabled = value;
-              });
-            },
-            secondary: const Icon(Icons.save, color: Colors.teal),
-          ),
           const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Clear Cache'),
-            subtitle: const Text('Free up storage space'),
-            leading: const Icon(Icons.cleaning_services, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: _showClearCacheDialog,
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Export Data'),
-            subtitle: const Text('Export your trek data'),
-            leading: const Icon(Icons.download, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              SnackbarHelper.showInfo(
-                'Coming Soon',
-                'Data export feature will be available soon!',
-              );
-            },
+          
+          // App Version
+          _buildSettingItem(
+            icon: Icons.info,
+            title: 'App Version',
+            subtitle: null,
+            trailing: Text(
+              '1.0.0',
+              style: GoogleFonts.poppins(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            onTap: null,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSupportSettings() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        children: [
-          ListTile(
-            title: const Text('Help & Support'),
-            subtitle: const Text('Get help and contact support'),
-            leading: const Icon(Icons.help_outline, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              SnackbarHelper.showInfo(
-                'Help & Support',
-                'Help and support will be available soon!',
-              );
-            },
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Report a Bug'),
-            subtitle: const Text('Report issues or bugs'),
-            leading: const Icon(Icons.bug_report, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              SnackbarHelper.showInfo(
-                'Report Bug',
-                'Bug reporting will be available soon!',
-              );
-            },
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Rate App'),
-            subtitle: const Text('Rate us on the app store'),
-            leading: const Icon(Icons.star, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              SnackbarHelper.showInfo(
-                'Rate App',
-                'App rating will be available soon!',
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAboutSettings() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Column(
-        children: [
-          ListTile(
-            title: const Text('About Trekify'),
-            subtitle: const Text('Learn more about the app'),
-            leading: const Icon(Icons.info_outline, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              Get.toNamed('/about');
-            },
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Version'),
-            subtitle: const Text('1.0.0'),
-            leading: const Icon(Icons.app_settings_alt, color: Colors.teal),
-            enabled: false,
-          ),
-          const Divider(height: 1, indent: 16, endIndent: 16),
-          ListTile(
-            title: const Text('Developer'),
-            subtitle: const Text('Trekify Team'),
-            leading: const Icon(Icons.person, color: Colors.teal),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              Get.toNamed('/developer');
-            },
-          ),
-        ],
+  Widget _buildSettingItem({
+    required IconData icon,
+    required String title,
+    String? subtitle,
+    Widget? trailing,
+    bool isDestructive = false,
+    VoidCallback? onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: (isDestructive ? Colors.red : const Color(0xFF059669)).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: isDestructive ? Colors.red : const Color(0xFF059669),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: isDestructive ? Colors.red : Colors.grey.shade800,
+                    ),
+                  ),
+                  if (subtitle != null) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (trailing != null) trailing,
+          ],
+        ),
       ),
     );
   }
@@ -396,8 +300,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // Implement theme switching logic here
     if (isDark) {
       Get.changeTheme(ThemeData.dark().copyWith(
-        primaryColor: Colors.teal,
-        colorScheme: ColorScheme.dark(primary: Colors.teal),
+        primaryColor: const Color(0xFF059669),
+        colorScheme: const ColorScheme.dark(primary: Color(0xFF059669)),
       ));
       SnackbarHelper.showSuccess(
         'Dark Mode',
@@ -405,8 +309,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       );
     } else {
       Get.changeTheme(ThemeData.light().copyWith(
-        primaryColor: Colors.teal,
-        colorScheme: ColorScheme.light(primary: Colors.teal),
+        primaryColor: const Color(0xFF059669),
+        colorScheme: const ColorScheme.light(primary: Color(0xFF059669)),
       ));
       SnackbarHelper.showSuccess(
         'Light Mode',
@@ -415,75 +319,168 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
-  void _showLanguageDialog() {
-    final languages = ['English', 'Hindi', 'Gujarati', 'Spanish', 'French'];
-    
+  void _showAppearanceDialog() {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Select Language'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: languages.length,
-            itemBuilder: (context, index) {
-              final language = languages[index];
-              return ListTile(
-                title: Text(language),
-                trailing: _selectedLanguage == language
-                    ? const Icon(Icons.check, color: Colors.teal)
-                    : null,
-                onTap: () {
-                  setState(() {
-                    _selectedLanguage = language;
-                  });
-                  Get.back();
-                  SnackbarHelper.showSuccess(
-                    'Language Changed',
-                    'Language has been changed to $language!',
-                  );
-                },
-              );
-            },
-          ),
+        title: Text(
+          'Appearance',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Light Mode Option
+            _buildThemeOption(
+              icon: Icons.light_mode,
+              title: 'Light Mode',
+              subtitle: 'Default light theme',
+              isSelected: !_isDarkMode,
+              onTap: () {
+                setState(() {
+                  _isDarkMode = false;
+                });
+                _toggleTheme(false);
+                Get.back();
+              },
+            ),
+            const SizedBox(height: 12),
+            
+            // Dark Mode Option
+            _buildThemeOption(
+              icon: Icons.dark_mode,
+              title: 'Dark Mode',
+              subtitle: 'Dark theme for better viewing',
+              isSelected: _isDarkMode,
+              onTap: () {
+                setState(() {
+                  _isDarkMode = true;
+                });
+                _toggleTheme(true);
+                Get.back();
+              },
+            ),
+          ],
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.grey.shade600),
+            ),
           ),
         ],
       ),
     );
   }
 
-  void _showClearCacheDialog() {
+  Widget _buildThemeOption({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF059669).withOpacity(0.1) : Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF059669) : Colors.grey.shade300,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: isSelected ? const Color(0xFF059669) : Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? const Color(0xFF059669) : Colors.grey.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (isSelected)
+              const Icon(
+                Icons.check_circle,
+                color: Color(0xFF059669),
+                size: 24,
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog() {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Clear Cache'),
-        content: const Text(
-          'This will clear all cached data and free up storage space. This action cannot be undone.',
+        title: Text(
+          'Delete Account',
+          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+        ),
+        content: Text(
+          'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently lost.',
+          style: GoogleFonts.poppins(),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: GoogleFonts.poppins(color: Colors.grey.shade600),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
+              backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
             onPressed: () {
               Get.back();
-              SnackbarHelper.showSuccess(
-                'Cache Cleared',
-                'Cache has been cleared successfully!',
+              SnackbarHelper.showError(
+                'Account Deletion',
+                'Account deletion feature will be available soon!',
               );
             },
-            child: const Text('Clear'),
+            child: Text(
+              'Delete',
+              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),

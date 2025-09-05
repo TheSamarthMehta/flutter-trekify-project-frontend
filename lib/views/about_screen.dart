@@ -14,7 +14,7 @@ class AboutScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.grey.shade50, // Consistent background color
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

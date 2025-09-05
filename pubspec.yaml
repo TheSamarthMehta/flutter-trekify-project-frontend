@@ -47,6 +47,7 @@ dependencies:
   sign_in_with_apple: ^7.0.1
   video_player: ^2.10.0
   smooth_page_indicator: ^1.2.1
+  image_picker: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +59,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  flutter_native_splash: ^2.4.6
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -106,9 +106,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
-# Add this section to the bottom of pubspec.yaml
-flutter_native_splash:
-  color: "#008080" # This should be your Teal color
-  image: assets/logo.jpg # IMPORTANT: Create this file and path
-  android: true
-  ios: true

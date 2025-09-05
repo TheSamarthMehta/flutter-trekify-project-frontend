@@ -8,7 +8,6 @@ import 'package:trekify/widgets/difficulty_card.dart';
 import 'package:trekify/widgets/season_card.dart';
 import 'package:trekify/widgets/trek_type_card.dart';
 import 'package:trekify/widgets/enhanced_search_bar.dart';
-import 'package:trekify/widgets/floating_action_button.dart';
 import 'package:trekify/widgets/trek_stat_card.dart';
 import 'package:trekify/widgets/featured_trek_card.dart';
 
@@ -48,28 +47,36 @@ class _HomeScreenContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      body: Column(
-        children: [
-          // Fixed Top Section - Hero with gradient background and title
-          _buildFixedHeroSection(context),
-          
-          // Scrollable Bottom Section - All content below hero
-          Expanded(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: _buildMainContent(context),
+      // Ensure status bar content is visible with light content
+      extendBodyBehindAppBar: true,
+      body: SafeArea(
+        // Only apply SafeArea to the bottom to avoid double padding at top
+        top: false,
+        child: Column(
+          children: [
+            // Fixed Top Section - Hero with gradient background and title
+            _buildFixedHeroSection(context),
+            
+            // Scrollable Bottom Section - All content below hero
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: _buildMainContent(context),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       drawer: CustomDrawer(),
-      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
   Widget _buildFixedHeroSection(BuildContext context) {
+    // Get the status bar height to ensure proper spacing
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    
     return Container(
-      height: 200, // Reduced height for hero section
+      height: 200 + statusBarHeight, // Add status bar height to total height
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -111,14 +118,14 @@ class _HomeScreenContent extends StatelessWidget {
             ),
           ),
           
-          // Navigation Buttons
+          // Navigation Buttons - positioned below status bar
           Positioned(
-            top: 16,
+            top: statusBarHeight + 16, // Add status bar height to top position
             left: 24,
             child: _buildMenuButton(context),
           ),
           Positioned(
-            top: 16,
+            top: statusBarHeight + 16, // Add status bar height to top position
             right: 24,
             child: _buildNotificationButton(),
           ),
@@ -721,26 +728,6 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildFloatingActionButton() {
-    return CustomFloatingActionButton(
-      onMainButtonTap: () {
-        // Handle main FAB tap
-        print('Main FAB tapped');
-      },
-      onNearbyTap: () {
-        // Handle nearby tap
-        print('Nearby tapped');
-      },
-      onWeatherTap: () {
-        // Handle weather tap
-        homeController.refreshWeather();
-      },
-      onEmergencyTap: () {
-        // Handle emergency tap
-        print('Emergency tapped');
-      },
-    );
-  }
 }
 
 // Enhanced Mountain Painter

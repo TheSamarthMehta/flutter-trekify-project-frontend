@@ -26,6 +26,14 @@ void main() async{
 
   await GetStorage.init();
 
+  // Configure system UI overlay for status bar visibility
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent, // Make status bar transparent
+      statusBarIconBrightness: Brightness.light, // Light icons for dark background
+      statusBarBrightness: Brightness.dark, // Dark status bar for light content
+    ),
+  );
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

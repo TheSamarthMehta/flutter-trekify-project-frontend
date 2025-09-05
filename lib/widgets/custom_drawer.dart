@@ -46,54 +46,52 @@ class CustomDrawer extends StatelessWidget {
     final drawerController = Get.find<AppDrawerController>();
 
     return Drawer(
-      child: SafeArea(
-        child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF0F172A), // Dark blue
-                Color(0xFF1E293B), // Lighter dark blue
-              ],
-            ),
-          ),
-          child: Column(
-            children: [
-              // Enhanced Header Section
-              _buildHeaderSection(),
-              
-              // User Profile Section
-              _buildUserProfileSection(),
-              
-              // Menu Items
-              Expanded(
-                child: GetBuilder<AppDrawerController>(
-                  builder: (controller) {
-                                         return SingleChildScrollView(
-                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      child: Column(
-                        children: List.generate(menuItems.length, (index) {
-                          final isSelected = controller.selectedIndex.value == index;
-                          final item = menuItems[index];
+      backgroundColor: Colors.transparent, // Make drawer background transparent
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white, // White background
+        ),
+        child: Column(
+          children: [
+            // Enhanced Header Section - extends to top
+            _buildHeaderSection(),
+            
+            const SizedBox(height: 16), // Space after header
+            
+            // User Profile Section
+            _buildUserProfileSection(),
+            
+            const SizedBox(height: 20), // Space after user profile
+            
+            // Menu Items
+            Expanded(
+              child: GetBuilder<AppDrawerController>(
+                builder: (controller) {
+                                       return SingleChildScrollView(
+                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Column(
+                      children: List.generate(menuItems.length, (index) {
+                        final isSelected = controller.selectedIndex.value == index;
+                        final item = menuItems[index];
 
-                          return _buildMenuItem(
-                            context: context,
-                            item: item,
-                            isSelected: isSelected,
-                            onTap: () => controller.selectPageFromDrawer(index),
-                          );
-                        }),
-                      ),
-                    );
-                  },
-                ),
+                        return _buildMenuItem(
+                          context: context,
+                          item: item,
+                          isSelected: isSelected,
+                          onTap: () => controller.selectPageFromDrawer(index),
+                        );
+                      }),
+                    ),
+                  );
+                },
               ),
-              
-              // Footer Section
-              _buildFooterSection(),
-            ],
-          ),
+            ),
+            
+            const SizedBox(height: 16), // Space before footer
+            
+            // Footer Section
+            _buildFooterSection(),
+          ],
         ),
       ),
     );
@@ -101,42 +99,38 @@ class CustomDrawer extends StatelessWidget {
 
     Widget _buildHeaderSection() {
     return Container(
-      height: 60,
+      height: 100, // Restored to a good size
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF0D9488), // Teal
-            const Color(0xFF059669), // Emerald
-            const Color(0xFF047857), // Darker emerald
-          ],
-        ),
-        borderRadius: const BorderRadius.only(
+      decoration: const BoxDecoration(
+        color: Color(0xFF059669), // Solid emerald green
+        borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(24),
           bottomRight: Radius.circular(24),
         ),
       ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(24),
-            bottomRight: Radius.circular(24),
+      child: Stack(
+        children: [
+          // Status bar area - extend to top
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            height: MediaQuery.of(Get.context!).padding.top,
+            child: Container(color: Color(0xFF059669)),
           ),
-          color: Colors.white.withOpacity(0.05),
-        ),
-        child: Center(
-          child: Text(
-            'EXPLORE ADVENTURES',
-            style: GoogleFonts.poppins(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
+          // Centered text
+          Center(
+            child: Text(
+              'EXPLORE ADVENTURES',
+              style: GoogleFonts.poppins(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.2,
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -146,10 +140,10 @@ class CustomDrawer extends StatelessWidget {
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 6),
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.05),
+        color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Colors.white.withOpacity(0.1),
+          color: Colors.grey.shade300,
           width: 1,
         ),
       ),
@@ -194,7 +188,7 @@ class CustomDrawer extends StatelessWidget {
                   Text(
                     'Ready for your next adventure?',
                     style: GoogleFonts.poppins(
-                      color: Colors.white,
+                      color: Colors.grey.shade800,
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
@@ -207,12 +201,12 @@ class CustomDrawer extends StatelessWidget {
            Container(
              padding: const EdgeInsets.all(5),
              decoration: BoxDecoration(
-               color: Colors.white.withOpacity(0.1),
+               color: Colors.grey.shade200,
                borderRadius: BorderRadius.circular(8),
              ),
              child: Icon(
                Icons.settings_rounded,
-               color: Colors.white.withOpacity(0.8),
+               color: Colors.grey.shade600,
                size: 16,
              ),
            ),
@@ -228,16 +222,16 @@ class CustomDrawer extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 2),
+      margin: const EdgeInsets.only(bottom: 8), // Increased spacing between menu items
       decoration: BoxDecoration(
         color: isSelected 
-            ? item['color'].withOpacity(0.2)
-            : Colors.white.withOpacity(0.03),
+            ? item['color'].withOpacity(0.1)
+            : Colors.grey.shade50,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isSelected 
               ? item['color'].withOpacity(0.4)
-              : Colors.white.withOpacity(0.08),
+              : Colors.grey.shade200,
           width: 1.5,
         ),
         boxShadow: isSelected ? [
@@ -291,7 +285,7 @@ class CustomDrawer extends StatelessWidget {
                     border: Border.all(
                       color: isSelected 
                           ? item['color'].withOpacity(0.3)
-                          : Colors.white.withOpacity(0.1),
+                          : Colors.grey.shade300,
                       width: 1,
                     ),
                   ),
@@ -299,7 +293,7 @@ class CustomDrawer extends StatelessWidget {
                     item['icon'],
                     color: isSelected 
                         ? Colors.white
-                        : Colors.white.withOpacity(0.9),
+                        : item['color'],
                     size: 20,
                   ),
                 ),
@@ -316,7 +310,7 @@ class CustomDrawer extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           color: isSelected 
                               ? Colors.white
-                              : Colors.white.withOpacity(0.95),
+                              : Colors.grey.shade800,
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           letterSpacing: -0.2,
@@ -328,7 +322,7 @@ class CustomDrawer extends StatelessWidget {
                         style: GoogleFonts.poppins(
                           color: isSelected 
                               ? Colors.white.withOpacity(0.85)
-                              : Colors.white.withOpacity(0.7),
+                              : Colors.grey.shade600,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                           letterSpacing: -0.1,
@@ -372,15 +366,15 @@ class CustomDrawer extends StatelessWidget {
           // Divider
           Container(
             height: 1,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Colors.transparent,
-                  Colors.white.withOpacity(0.2),
-                  Colors.transparent,
-                ],
-              ),
-            ),
+                           decoration: BoxDecoration(
+                 gradient: LinearGradient(
+                   colors: [
+                     Colors.transparent,
+                     Colors.grey.shade300,
+                     Colors.transparent,
+                   ],
+                 ),
+               ),
           ),
           
                      const SizedBox(height: 10),
@@ -393,7 +387,7 @@ class CustomDrawer extends StatelessWidget {
                 child: Text(
                   'Trekify v1.0.0',
                   style: GoogleFonts.poppins(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.grey.shade600,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                   ),
@@ -423,13 +417,13 @@ class CustomDrawer extends StatelessWidget {
   Widget _buildFooterIcon(IconData icon, String tooltip, {VoidCallback? onTap}) {
     Widget iconWidget = Container(
       padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Icon(
-        icon,
-        color: Colors.white.withOpacity(0.6),
+             decoration: BoxDecoration(
+         color: Colors.grey.shade200,
+         borderRadius: BorderRadius.circular(6),
+       ),
+       child: Icon(
+         icon,
+         color: Colors.grey.shade600,
         size: 14,
       ),
     );

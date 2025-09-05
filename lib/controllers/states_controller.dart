@@ -19,12 +19,20 @@ class StatesController extends GetxController {
   var stateList = <StateUIModel>[].obs;
   var isLoading = true.obs;
   var exploredTreks = <String>{}.obs; // Tracks user's progress
+  
+  // Search functionality
+  var searchQuery = ''.obs;
+  var filteredStates = <StateUIModel>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     // Initialize states with trek data
     initializeStatesWithTreks();
+    
+    // Listen to stateList changes to update filtered states
+    ever(stateList, (_) => _updateFilteredStates());
+    ever(searchQuery, (_) => _updateFilteredStates());
   }
 
   /// Initialize basic state data without TrekController dependency
@@ -269,4 +277,40 @@ class StatesController extends GetxController {
       return 0.0;
     }
   }
+
+  // Search functionality methods
+  void updateSearchQuery(String query) {
+    searchQuery.value = query.trim();
+  }
+
+  void clearSearch() {
+    searchQuery.value = '';
+    print('🔍 Search cleared');
+  }
+
+  void _updateFilteredStates() {
+    if (searchQuery.value.isEmpty) {
+      filteredStates.value = List.from(stateList);
+    } else {
+      filteredStates.value = stateList.where((state) {
+        // Convert both search query and state name to proper case for comparison
+        final searchQueryCapitalized = _capitalizeFirstLetter(searchQuery.value);
+        final stateNameCapitalized = _capitalizeFirstLetter(state.name);
+        
+        // Check if state name contains the search query (case-insensitive)
+        return stateNameCapitalized.toLowerCase().contains(searchQueryCapitalized.toLowerCase());
+      }).toList();
+    }
+  }
+
+  String _capitalizeFirstLetter(String text) {
+    if (text.isEmpty) return text;
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
+  }
+
+  // Getter for filtered states count
+  int get filteredStatesCount => filteredStates.length;
+  
+  // Getter for total explored treks count
+  int get totalExploredTreksCount => exploredTreks.length;
 }

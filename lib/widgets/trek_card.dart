@@ -26,7 +26,7 @@ class TrekCard extends StatelessWidget {
       ),
       child: Card(
         elevation: 4,
-        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         shape:
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         clipBehavior: Clip.antiAlias,

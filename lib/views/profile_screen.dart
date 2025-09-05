@@ -1,6 +1,7 @@
 // lib/views/profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:trekify/controllers/auth_controller.dart';
 import 'package:trekify/controllers/trek_controller.dart';
 import 'package:trekify/widgets/custom_drawer.dart';
@@ -21,6 +22,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final WishlistController wishlistController = Get.find<WishlistController>();
   final StatesController statesController = Get.find<StatesController>();
   final TrekController trekController = Get.find<TrekController>();
+  
+  bool _isDarkMode = false;
 
   void _showStatDetailsDialog(BuildContext context, String title, List<String> items, String emoji) {
     if (items.isEmpty) {
@@ -74,59 +77,192 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        backgroundColor: Colors.teal,
-        elevation: 0,
-      ),
+      backgroundColor: Colors.grey.shade50, // Consistent background color
+      extendBodyBehindAppBar: true,
       drawer: CustomDrawer(),
-      backgroundColor: Colors.grey[100],
-      body: SingleChildScrollView(
+      body: Column(
+        children: [
+          // Beautiful Header Section
+          _buildProfileHeaderSection(context),
+          
+          // Main Content
+          Expanded(
+            child: SingleChildScrollView(
         child: Column(
           children: [
-            _buildProfileHeader(authController),
             _buildUserInfo(authController),
-            const SizedBox(height: 20),
-            _buildStatsCard(),
-            const SizedBox(height: 20),
-            _buildOptionsList(authController),
-            const SizedBox(height: 20),
+                  const SizedBox(height: 24),
+                  _buildStatsSection(),
+                  const SizedBox(height: 24),
+                  _buildQuickActions(),
+                  const SizedBox(height: 24),
+                  _buildAccountSection(authController),
+                  const SizedBox(height: 24),
+                  _buildPreferencesSection(),
+                  const SizedBox(height: 24),
+                  _buildSupportSection(),
+                  const SizedBox(height: 24),
+                  _buildLogoutSection(authController),
+                  const SizedBox(height: 32),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileHeaderSection(BuildContext context) {
+    // Get the status bar height to ensure proper spacing
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    
+    return Container(
+      height: 280 + statusBarHeight, // Increased height to accommodate profile picture
+      child: Stack(
+        fit: StackFit.expand,
+      children: [
+          // Beautiful Gradient Background
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF1E3A8A), // Deep blue
+                  const Color(0xFF3B82F6), // Blue
+                  const Color(0xFF059669), // Emerald
+                  const Color(0xFF10B981), // Light emerald
+                ],
+                stops: const [0.0, 0.3, 0.7, 1.0],
+              ),
+            ),
+          ),
+          
+          // Enhanced overlay for better readability
+        Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.25),
+                  Colors.black.withOpacity(0.08),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+          
+          // Navigation Buttons - positioned below status bar
+          Positioned(
+            top: statusBarHeight + 16,
+            left: 24,
+            child: _buildMenuButton(context),
+          ),
+          
+          // Profile Picture - positioned in the center
+          Positioned(
+            top: statusBarHeight + 80,
+            left: 0,
+            right: 0,
+            child: _buildProfilePicture(authController),
+          ),
+          
+          // Hero Title - Fixed position at bottom
+          Positioned(
+            left: 28,
+            bottom: 28,
+            child: _buildProfileTitle(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMenuButton(BuildContext context) {
+    return Builder(
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.18),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.25),
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.15),
+              blurRadius: 16,
+              offset: const Offset(0, 6),
+            ),
           ],
+        ),
+        child: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white, size: 26),
+          onPressed: () => Scaffold.of(context).openDrawer(),
         ),
       ),
     );
   }
 
-  Widget _buildProfileHeader(AuthController authController) {
-    return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.center,
-      children: [
-        Container(
-          height: 150,
-          width: double.infinity,
-          decoration: const BoxDecoration(
-            color: Colors.teal,
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(30),
-              bottomRight: Radius.circular(30),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 100,
+
+  Widget _buildProfilePicture(AuthController authController) {
+    return Obx(() => CircleAvatar(
+      radius: 60,
+      backgroundColor: Colors.white,
           child: CircleAvatar(
-            radius: 52,
-            backgroundColor: Colors.white,
-            child: Obx(() => CircleAvatar(
-              radius: 50,
+        radius: 58,
               backgroundImage: authController.user.value?['avatar'] != null
                   ? NetworkImage(authController.user.value!['avatar']!)
                   : null,
               child: authController.user.value?['avatar'] == null
-                  ? const Icon(Icons.person, size: 50, color: Colors.grey)
+            ? const Icon(Icons.person, size: 60, color: Colors.grey)
                   : null,
-            )),
+      ),
+    ));
+  }
+
+  Widget _buildProfileTitle() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // First line text
+        Text(
+          'My',
+          style: GoogleFonts.poppins(
+            fontSize: 18,
+            fontWeight: FontWeight.w300,
+            color: Colors.white.withOpacity(0.95),
+            height: 1.1,
+          ).copyWith(
+            fontFamilyFallback: ['Roboto', 'Arial', 'sans-serif'],
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Profile',
+          style: GoogleFonts.poppins(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+            height: 0.9,
+            letterSpacing: -0.5,
+          ).copyWith(
+            fontFamilyFallback: ['Roboto', 'Arial', 'sans-serif'],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Manage your account and preferences',
+          style: GoogleFonts.poppins(
+            fontSize: 12,
+            color: Colors.white.withOpacity(0.9),
+            fontWeight: FontWeight.w400,
+            height: 1.2,
+          ).copyWith(
+            fontFamilyFallback: ['Roboto', 'Arial', 'sans-serif'],
           ),
         ),
       ],
@@ -135,36 +271,69 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildUserInfo(AuthController authController) {
     return Container(
-      padding: const EdgeInsets.only(top: 60),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Obx(() => Column(
         children: [
           Text(
             authController.getCurrentUserName(),
-            style: const TextStyle(
-              fontSize: 22,
+            style: GoogleFonts.poppins(
+              fontSize: 28,
               fontWeight: FontWeight.bold,
+              color: Colors.grey.shade800,
             ),
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 8),
           Text(
             authController.getCurrentUserEmail(),
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            style: GoogleFonts.poppins(
+              fontSize: 16, 
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w400,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF059669).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: const Color(0xFF059669).withOpacity(0.3),
+                width: 1,
+              ),
+            ),
+            child: Text(
+              'Premium Member',
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF059669),
+              ),
+            ),
           ),
         ],
       )),
     );
   }
 
-  Widget _buildStatsCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Card(
-        elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20.0),
-          child: Obx(() {
+  Widget _buildStatsSection() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Your Journey',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Obx(() {
             final visitedStates = trekController.allTreks
                 .where((trek) => statesController.exploredTreks.contains(trek.trekName))
                 .map((trek) => trek.state)
@@ -172,107 +341,455 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 .toList();
 
             return Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                GestureDetector(
-                  onTap: () => _showStatDetailsDialog(
+                Expanded(
+                  child: _buildModernStatCard(
+                    'Treks',
+                    itineraryController.itineraryTreks.length.toString(),
+                    '⛰️',
+                    const Color(0xFF3B82F6),
+                    () => _showStatDetailsDialog(
                     context,
                     'My Treks',
                     itineraryController.itineraryTreks.map((t) => t.trekName).toList(),
                     '⛰️',
                   ),
-                  child: _buildStatItem(
-                    "My Treks",
-                    itineraryController.itineraryTreks.length.toString(),
-                    '⛰️',
                   ),
                 ),
-                GestureDetector(
-                  onTap: () => _showStatDetailsDialog(
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildModernStatCard(
+                    'Wishlist',
+                    wishlistController.wishlistItems.length.toString(),
+                    '❤️',
+                    const Color(0xFFEF4444),
+                    () => _showStatDetailsDialog(
                     context,
                     'My Wishlist',
                     wishlistController.wishlistItems.map((t) => t.trekName).toList(),
                     '❤️',
                   ),
-                  child: _buildStatItem(
-                    "Wishlists",
-                    wishlistController.wishlistItems.length.toString(),
-                    '❤️',
                   ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    _showStatDetailsDialog(
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _buildModernStatCard(
+                    'States',
+                    visitedStates.length.toString(),
+                    '🗺️',
+                    const Color(0xFF059669),
+                    () => _showStatDetailsDialog(
                       context,
                       'States Visited',
                       visitedStates,
                       '🗺️',
-                    );
-                  },
-                  child: _buildStatItem(
-                    "States Visited",
-                    visitedStates.length.toString(),
-                    '🗺️',
+                    ),
                   ),
                 ),
               ],
             );
           }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernStatCard(String label, String value, String emoji, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                emoji,
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: GoogleFonts.poppins(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey.shade800,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildStatItem(String label, String value, String emoji) {
-    return Column(
+  Widget _buildQuickActions() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(emoji, style: const TextStyle(fontSize: 28)),
-        const SizedBox(height: 8),
         Text(
-          value,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            'Quick Actions',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionCard(
+                  'Create Itinerary',
+                  'Plan your next adventure',
+                  Icons.add_location_alt,
+                  const Color(0xFF3B82F6),
+                  () => Get.toNamed('/itinerary'),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionCard(
+                  'Find Treks',
+                  'Discover new places',
+                  Icons.explore,
+                  const Color(0xFF059669),
+                  () => Get.toNamed('/treks'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionCard(String title, String subtitle, IconData icon, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: GoogleFonts.poppins(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade800,
+              ),
         ),
         const SizedBox(height: 4),
-        Text(label, style: TextStyle(fontSize: 14, color: Colors.grey[600])),
+            Text(
+              subtitle,
+              style: GoogleFonts.poppins(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAccountSection(AuthController authController) {
+    return _buildSection(
+      'Account',
+      [
+        _buildModernOptionItem(
+          Icons.person_outline,
+          'Edit Profile',
+          'Update your personal information',
+          () => Get.toNamed('/edit-profile'),
+        ),
+        _buildModernOptionItem(
+          Icons.security,
+          'Privacy & Security',
+          'Coming Soon',
+          () => _showComingSoonDialog('Privacy & Security'),
+        ),
+        _buildModernOptionItem(
+          Icons.notifications_outlined,
+          'Notifications',
+          'Coming Soon',
+          () => _showComingSoonDialog('Notifications'),
+        ),
       ],
     );
   }
 
-  Widget _buildOptionsList(AuthController authController) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20.0),
-      child: Card(
-        elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.1),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  Widget _buildPreferencesSection() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Preferences',
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                // Appearance Section with Theme Preview
+                _buildAppearanceSection(),
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                
+                // Language
+                _buildModernOptionItem(
+                  Icons.language,
+                  'Language',
+                  'Coming Soon',
+                  () => _showComingSoonDialog('Language'),
+                ),
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                
+                // Location Services
+                _buildModernOptionItem(
+                  Icons.location_on_outlined,
+                  'Location Services',
+                  'Coming Soon',
+                  () => _showComingSoonDialog('Location Services'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportSection() {
+    return _buildSection(
+      'Support',
+      [
+        _buildModernOptionItem(
+          Icons.help_outline,
+          'Help Center',
+          'Coming Soon',
+          () => _showComingSoonDialog('Help Center'),
+        ),
+        _buildModernOptionItem(
+          Icons.feedback_outlined,
+          'Send Feedback',
+          'Coming Soon',
+          () => _showComingSoonDialog('Send Feedback'),
+        ),
+        _buildModernOptionItem(
+          Icons.info_outline,
+          'About Trekify',
+          'App version and information',
+          () => Get.toNamed('/about'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLogoutSection(AuthController authController) {
+    return _buildSection(
+      'Account Actions',
+      [
+        _buildModernOptionItem(
+          Icons.logout,
+          'Sign Out',
+          'Sign out of your account',
+          () => _showLogoutDialog(authController),
+          isDestructive: true,
+        ),
+        _buildModernOptionItem(
+          Icons.clear_all,
+          'Clear Session (Test)',
+          'Clear session data for testing',
+          () => _showClearSessionDialog(authController),
+          isDestructive: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSection(String title, List<Widget> children) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.poppins(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.grey.shade800,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Column(children: children),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildModernOptionItem(
+    IconData icon,
+    String title,
+    String subtitle,
+    VoidCallback onTap, {
+    bool isDestructive = false,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Row(
           children: [
-            _buildOptionItem(Icons.person_outline, "Edit Profile", () {
-              Get.toNamed('/edit-profile');
-            }),
-            const Divider(height: 1, indent: 16, endIndent: 16),
-                         _buildOptionItem(Icons.settings_outlined, "Settings", () {
-               Get.toNamed('/settings');
-             }),
-             const Divider(height: 1, indent: 16, endIndent: 16),
-             _buildOptionItem(Icons.logout, "Log Out", () {
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: (isDestructive ? Colors.red : const Color(0xFF059669)).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                icon,
+                color: isDestructive ? Colors.red : const Color(0xFF059669),
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: isDestructive ? Colors.red : Colors.grey.shade800,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.poppins(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLogoutDialog(AuthController authController) {
                Get.defaultDialog(
-                 title: "Log Out",
-                 middleText: "Are you sure you want to log out?",
-                 textConfirm: "Yes",
-                 textCancel: "No",
+      title: "Sign Out",
+      titleStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+      middleText: "Are you sure you want to sign out?",
+      middleTextStyle: GoogleFonts.poppins(),
+      textConfirm: "Yes, Sign Out",
+      textCancel: "Cancel",
                  confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
                  onConfirm: () => authController.signOut(),
                );
-             }, color: Colors.red),
-             const Divider(height: 1, indent: 16, endIndent: 16),
-             _buildOptionItem(Icons.clear_all, "Clear Session (Test)", () {
+  }
+
+  void _showClearSessionDialog(AuthController authController) {
                Get.defaultDialog(
                  title: "Clear Session",
+      titleStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
                  middleText: "This will clear your session data and force you to login again. Useful for testing auto-logout functionality.",
-                 textConfirm: "Clear",
+      middleTextStyle: GoogleFonts.poppins(),
+      textConfirm: "Clear Session",
                  textCancel: "Cancel",
                  confirmTextColor: Colors.white,
+      buttonColor: Colors.orange,
                  onConfirm: () {
                    authController.forceClearSession();
                    Get.back();
@@ -295,28 +812,281 @@ class _ProfileScreenState extends State<ProfileScreen> {
                    );
                  },
                );
-             }, color: Colors.orange),
+  }
+
+  Widget _buildAppearanceSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF059669).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.palette_outlined,
+                  color: Color(0xFF059669),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Appearance',
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade800,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Choose your preferred theme',
+                      style: GoogleFonts.poppins(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Theme Options with Preview
+          Row(
+            children: [
+              // Light Mode Preview
+              Expanded(
+                child: _buildThemePreview(
+                  title: 'Light Mode',
+                  isSelected: !_isDarkMode,
+                  isLight: true,
+                  onTap: () {
+                    setState(() {
+                      _isDarkMode = false;
+                    });
+                    _toggleTheme(false);
+                  },
+                ),
+              ),
+              
+              const SizedBox(width: 12),
+              
+              // Dark Mode Preview
+              Expanded(
+                child: _buildThemePreview(
+                  title: 'Dark Mode',
+                  isSelected: _isDarkMode,
+                  isLight: false,
+                  onTap: () {
+                    setState(() {
+                      _isDarkMode = true;
+                    });
+                    _toggleTheme(true);
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildThemePreview({
+    required String title,
+    required bool isSelected,
+    required bool isLight,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFF059669).withOpacity(0.1) : Colors.grey.shade50,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF059669) : Colors.grey.shade300,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            // Preview Card
+            Container(
+              height: 60,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: isLight ? Colors.white : Colors.grey.shade800,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: isLight ? Colors.grey.shade300 : Colors.grey.shade600,
+                  width: 1,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  // Header bar
+                  Container(
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: isLight ? const Color(0xFF059669) : Colors.grey.shade700,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(7),
+                        topRight: Radius.circular(7),
+                      ),
+                    ),
+                  ),
+                  
+                  // Content dots
+                  Positioned(
+                    top: 25,
+                    left: 8,
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: isLight ? Colors.grey.shade400 : Colors.grey.shade500,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: isLight ? Colors.grey.shade400 : Colors.grey.shade500,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Container(
+                          width: 4,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: isLight ? Colors.grey.shade400 : Colors.grey.shade500,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  // Bottom line
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    right: 8,
+                    child: Container(
+                      height: 2,
+                      decoration: BoxDecoration(
+                        color: isLight ? Colors.grey.shade300 : Colors.grey.shade600,
+                        borderRadius: BorderRadius.circular(1),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 8),
+            
+            // Title and Selection
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  isLight ? Icons.light_mode : Icons.dark_mode,
+                  size: 16,
+                  color: isSelected ? const Color(0xFF059669) : Colors.grey.shade600,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  title,
+                  style: GoogleFonts.poppins(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: isSelected ? const Color(0xFF059669) : Colors.grey.shade600,
+                  ),
+                ),
+                if (isSelected) ...[
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.check_circle,
+                    size: 16,
+                    color: Color(0xFF059669),
+                  ),
+                ],
+              ],
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildOptionItem(
-      IconData icon,
-      String title,
-      VoidCallback onTap, {
-        Color? color,
-      }) {
-    return ListTile(
-      leading: Icon(icon, color: color ?? Colors.teal),
-      title: Text(title, style: TextStyle(color: color, fontSize: 16)),
-      trailing: Icon(
-        Icons.arrow_forward_ios,
-        color: color ?? Colors.grey[400],
-        size: 16,
-      ),
-      onTap: onTap,
+  void _toggleTheme(bool isDark) {
+    // Implement theme switching logic here
+    if (isDark) {
+      Get.changeTheme(ThemeData.dark().copyWith(
+        primaryColor: const Color(0xFF059669),
+        colorScheme: const ColorScheme.dark(primary: Color(0xFF059669)),
+      ));
+      Get.snackbar(
+        '🌙 Dark Mode',
+        'Dark mode has been enabled!',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF059669),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.dark_mode, color: Colors.white),
+      );
+    } else {
+      Get.changeTheme(ThemeData.light().copyWith(
+        primaryColor: const Color(0xFF059669),
+        colorScheme: const ColorScheme.light(primary: Color(0xFF059669)),
+      ));
+      Get.snackbar(
+        '☀️ Light Mode',
+        'Light mode has been enabled!',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: const Color(0xFF059669),
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.light_mode, color: Colors.white),
+      );
+    }
+  }
+
+  void _showComingSoonDialog(String feature) {
+    Get.defaultDialog(
+      title: "🚀 Coming Soon",
+      titleStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+      middleText: "$feature feature is under development and will be available in a future update.",
+      middleTextStyle: GoogleFonts.poppins(),
+      textConfirm: "Got it",
+      confirmTextColor: Colors.white,
+      buttonColor: const Color(0xFF059669),
+      onConfirm: () => Get.back(),
     );
   }
 }

@@ -53,6 +53,16 @@ class TrekController extends GetxController {
     return sortedList;
   }
 
+  List<String> get uniqueTypes {
+    if (allTreks.isEmpty) return [];
+    final types = allTreks
+        .map((trek) => trek.type)
+        .where((type) => type.isNotEmpty && type != 'N/A')
+        .toSet();
+    final sortedList = types.toList()..sort();
+    return sortedList;
+  }
+
   String get activeFilterTitle {
     if (searchQuery.isNotEmpty) {
       return "Search Results";

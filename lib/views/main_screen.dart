@@ -26,6 +26,7 @@ class MainScreen extends GetView<AppDrawerController> {
     return WillPopScope(
       onWillPop: controller.handleBackButton,
       child: Scaffold(
+        backgroundColor: Colors.grey.shade50, // Consistent background color
         drawer: CustomDrawer(),
         body: Obx(() => IndexedStack(
           index: controller.selectedIndex.value,
