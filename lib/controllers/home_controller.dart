@@ -58,44 +58,39 @@ class HomeController extends GetxController {
   }
 
   void _initializeData() {
-    // Initialize featured treks
+    // Initialize with specific featured treks
     featuredTreks.value = [
       {
-        'title': 'Himalayan Peak Trek',
-        'location': 'Himalayas, India',
-        'difficulty': 'Difficult',
-        'rating': '4.9',
+        'title': 'Valley of Flowers Trek',
+        'location': 'Uttarakhand, India',
+        'difficulty': 'Moderate',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/moderate_xu1jby.jpg',
+      },
+      {
+        'title': 'Kashmir Great Lakes Trek',
+        'location': 'Jammu & Kashmir, India',
+        'difficulty': 'Moderate to Difficult',
         'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/difficult_net5vk.jpg',
       },
       {
-        'title': 'Valley of Flowers',
-        'location': 'Uttarakhand, India',
-        'difficulty': 'Moderate',
-        'rating': '4.7',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/moderate_xu1jby.jpg',
+        'title': 'Goechala Trek',
+        'location': 'Sikkim, India',
+        'difficulty': 'Difficult',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/difficult_net5vk.jpg',
       },
       {
-        'title': 'Western Ghats Trail',
-        'location': 'Karnataka, India',
-        'difficulty': 'Easy',
-        'rating': '4.5',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843181/easy_tix09h.jpg',
-      },
-      {
-        'title': 'Kedarkantha Trek',
-        'location': 'Uttarakhand, India',
-        'difficulty': 'Moderate',
-        'rating': '4.6',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/moderate_xu1jby.jpg',
-      },
-      {
-        'title': 'Triund Trek',
-        'location': 'Himachal Pradesh, India',
-        'difficulty': 'Easy',
-        'rating': '4.4',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843181/easy_tix09h.jpg',
+        'title': 'Chadar Trek',
+        'location': 'Ladakh, India',
+        'difficulty': 'Difficult',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/difficult_net5vk.jpg',
       },
     ];
+  }
+
+  // Method to update featured treks from actual trek data (keeping for future use)
+  void updateFeaturedTreks(List<dynamic> treks) {
+    // Keep the specific featured treks instead of using random treks
+    // This method is kept for potential future use
   }
 
   /// Fetch real weather data from API

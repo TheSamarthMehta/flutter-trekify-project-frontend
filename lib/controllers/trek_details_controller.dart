@@ -1,12 +1,9 @@
-// lib/controllers/trek_details_controller.dart
 import 'package:get/get.dart';
 import 'package:trekify/models/trek_model.dart';
-// ✅ 1. IMPORT THE NEW REVIEW MODEL
 import 'package:trekify/models/review_model.dart';
 
 class TrekDetailsController extends GetxController {
   final trek = Rxn<Trek>();
-  // ✅ 2. CREATE A REACTIVE LIST TO HOLD REVIEWS
   final reviews = <Review>[].obs;
 
   @override
@@ -15,14 +12,11 @@ class TrekDetailsController extends GetxController {
     final dynamic argument = Get.arguments;
     if (argument is Trek) {
       trek.value = argument;
-      // ✅ 3. LOAD SOME SAMPLE REVIEWS WHEN THE CONTROLLER IS INITIALIZED
       _loadSampleReviews();
     }
   }
 
-  // ✅ 4. METHOD TO ADD A NEW REVIEW TO THE LIST
   void addReview(Review review) {
-    // .insert(0, review) adds the newest review to the top of the list
     reviews.insert(0, review);
   }
 

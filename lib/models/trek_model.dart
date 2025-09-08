@@ -38,36 +38,35 @@ class Trek {
       'state': state,
       'district': district,
       'difficultyLevel': difficulty,
-      'season': season,
-      'trekType': type,
-      'image': imageUrl,
-      'maxAltitude': altitude,
-      'distance': totalDistance,
+      'recommendendSeason': season, // Note: JSON has typo "recommendendSeason"
+      'terrainType': type,
+      'images': imageUrl, // JSON uses 'images' not 'image'
+      'altitude': altitude,
+      'totalDistance': totalDistance,
       'ageGroup': ageGroup,
       'guideNeeded': guideNeeded,
       'snowTrek': snowTrek,
       'recommendedGear': recommendedGear,
-      'trekDescription': description,
     };
   }
 
   factory Trek.fromJson(Map<String, dynamic> json) {
     return Trek(
-      // ✅ CORRECTED: Using keys directly from the server's response
+      // ✅ CORRECTED: Using exact keys from the JSON response
       trekName: json['trekName'] ?? 'Unknown Trek',
       state: json['state'] ?? 'Unknown State',
-      district: json['district'] ?? (json['trekType'] ?? 'N/A'),
+      district: json['district'] ?? 'N/A',
       difficulty: json['difficultyLevel'] ?? 'N/A',
-      season: json['season'] ?? 'All Seasons',
-      type: json['trekType'] ?? 'Miscellaneous',
-      imageUrl: json['image'] ?? '',
-      altitude: (json['maxAltitude'] ?? 'N/A').toString(),
-      totalDistance: json['distance'] ?? 'N/A',
+      season: json['recommendendSeason'] ?? 'All Seasons', // Note: JSON has typo "recommendendSeason"
+      type: json['terrainType'] ?? 'Miscellaneous',
+      imageUrl: json['images'] ?? '', // JSON uses 'images' not 'image'
+      altitude: (json['altitude'] ?? 'N/A').toString(),
+      totalDistance: json['totalDistance'] ?? 'N/A',
       ageGroup: (json['ageGroup'] ?? 'N/A').toString(),
       guideNeeded: (json['guideNeeded'] ?? '').toString().toUpperCase(),
       snowTrek: (json['snowTrek'] ?? 'NO').toString().toUpperCase(),
       recommendedGear: (json['recommendedGear'] ?? '').toString(),
-      description: json['trekDescription'] ?? 'No description available for this trek.',
+      description: 'Trek in ${json['state'] ?? 'Unknown State'} - ${json['terrainType'] ?? 'Miscellaneous'} terrain',
     );
   }
 

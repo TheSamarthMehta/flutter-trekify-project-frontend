@@ -178,12 +178,8 @@ class SeasonCard extends StatelessWidget {
 
   Color _getSeasonColor() {
     switch (title.toLowerCase()) {
-      case 'spring':
-        return Colors.pink;
       case 'summer':
         return Colors.orange;
-      case 'autumn':
-        return Colors.brown;
       case 'winter':
         return Colors.blue;
       case 'monsoon':
@@ -195,12 +191,8 @@ class SeasonCard extends StatelessWidget {
 
   IconData _getSeasonIcon() {
     switch (title.toLowerCase()) {
-      case 'spring':
-        return Icons.local_florist;
       case 'summer':
         return Icons.wb_sunny;
-      case 'autumn':
-        return Icons.eco;
       case 'winter':
         return Icons.ac_unit;
       case 'monsoon':
@@ -212,12 +204,8 @@ class SeasonCard extends StatelessWidget {
 
   String _getSeasonDescription() {
     switch (title.toLowerCase()) {
-      case 'spring':
-        return 'Blooming trails';
       case 'summer':
         return 'Sunny adventures';
-      case 'autumn':
-        return 'Colorful landscapes';
       case 'winter':
         return 'Snowy peaks';
       case 'monsoon':

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:trekify/utils/snackbar_helper.dart';
 
 class DeveloperScreen extends StatelessWidget {
   const DeveloperScreen({super.key});
@@ -618,44 +617,26 @@ class DeveloperScreen extends StatelessWidget {
 
   // Action methods
   void _launchEmail(String email) {
-    SnackbarHelper.showInfo(
-      'Email',
-      'Email $email will be available soon!',
-    );
+    Get.snackbar('Info', 'Email $email will be available soon');
   }
 
   void _launchPhone() {
-    SnackbarHelper.showInfo(
-      'Phone',
-      'Phone support will be available soon!',
-    );
+    Get.snackbar('Info', 'Phone support will be available soon');
   }
 
   void _launchLocation() {
-    SnackbarHelper.showInfo(
-      'Location',
-      'Location details will be available soon!',
-    );
+    Get.snackbar('Info', 'Location details will be available soon');
   }
 
   void _launchGitHub() {
-    SnackbarHelper.showInfo(
-      'GitHub',
-      'GitHub repository will be available soon!',
-    );
+    Get.snackbar('Info', 'GitHub repository will be available soon');
   }
 
   void _launchLinkedIn() {
-    SnackbarHelper.showInfo(
-      'LinkedIn',
-      'LinkedIn profile will be available soon!',
-    );
+    Get.snackbar('Info', 'LinkedIn profile will be available soon');
   }
 
   void _launchPortfolio() {
-    SnackbarHelper.showInfo(
-      'Portfolio',
-      'Portfolio website will be available soon!',
-    );
+    Get.snackbar('Info', 'Portfolio website will be available soon');
   }
 }

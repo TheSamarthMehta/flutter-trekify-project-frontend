@@ -1,8 +1,6 @@
-// lib/models/review_model.dart
-
 class Review {
   final String userName;
-  final int rating; // Rating out of 5
+  final int rating;
   final String comment;
   final DateTime timestamp;
 

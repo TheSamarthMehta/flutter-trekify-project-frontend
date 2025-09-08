@@ -23,7 +23,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final StatesController statesController = Get.find<StatesController>();
   final TrekController trekController = Get.find<TrekController>();
   
-  bool _isDarkMode = false;
 
   void _showStatDetailsDialog(BuildContext context, String title, List<String> items, String emoji) {
     if (items.isEmpty) {
@@ -91,21 +90,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             _buildUserInfo(authController),
-                  const SizedBox(height: 24),
-                  _buildStatsSection(),
-                  const SizedBox(height: 24),
-                  _buildQuickActions(),
-                  const SizedBox(height: 24),
-                  _buildAccountSection(authController),
-                  const SizedBox(height: 24),
-                  _buildPreferencesSection(),
-                  const SizedBox(height: 24),
-                  _buildSupportSection(),
-                  const SizedBox(height: 24),
-                  _buildLogoutSection(authController),
-                  const SizedBox(height: 32),
-                ],
-              ),
+            const SizedBox(height: 24),
+            _buildStatsSection(),
+            const SizedBox(height: 32),
+            _buildAccountSection(authController),
+            const SizedBox(height: 32),
+            _buildSupportSection(),
+            const SizedBox(height: 32),
+            _buildLogoutSection(authController),
+            const SizedBox(height: 32),
+          ],
+        ),
             ),
           ),
         ],
@@ -293,26 +288,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF059669).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: const Color(0xFF059669).withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              'Premium Member',
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF059669),
-              ),
-            ),
-          ),
         ],
       )),
     );
@@ -447,98 +422,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildQuickActions() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-            'Quick Actions',
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade800,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _buildActionCard(
-                  'Create Itinerary',
-                  'Plan your next adventure',
-                  Icons.add_location_alt,
-                  const Color(0xFF3B82F6),
-                  () => Get.toNamed('/itinerary'),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildActionCard(
-                  'Find Treks',
-                  'Discover new places',
-                  Icons.explore,
-                  const Color(0xFF059669),
-                  () => Get.toNamed('/treks'),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildActionCard(String title, String subtitle, IconData icon, Color color, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade800,
-              ),
-        ),
-        const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: GoogleFonts.poppins(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildAccountSection(AuthController authController) {
     return _buildSection(
@@ -550,89 +434,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'Update your personal information',
           () => Get.toNamed('/edit-profile'),
         ),
-        _buildModernOptionItem(
-          Icons.security,
-          'Privacy & Security',
-          'Coming Soon',
-          () => _showComingSoonDialog('Privacy & Security'),
-        ),
-        _buildModernOptionItem(
-          Icons.notifications_outlined,
-          'Notifications',
-          'Coming Soon',
-          () => _showComingSoonDialog('Notifications'),
-        ),
       ],
     );
   }
 
-  Widget _buildPreferencesSection() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Preferences',
-            style: GoogleFonts.poppins(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade800,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Column(
-              children: [
-                // Appearance Section with Theme Preview
-                _buildAppearanceSection(),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                
-                // Language
-                _buildModernOptionItem(
-                  Icons.language,
-                  'Language',
-                  'Coming Soon',
-                  () => _showComingSoonDialog('Language'),
-                ),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                
-                // Location Services
-                _buildModernOptionItem(
-                  Icons.location_on_outlined,
-                  'Location Services',
-                  'Coming Soon',
-                  () => _showComingSoonDialog('Location Services'),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSupportSection() {
     return _buildSection(
       'Support',
       [
-        _buildModernOptionItem(
-          Icons.help_outline,
-          'Help Center',
-          'Coming Soon',
-          () => _showComingSoonDialog('Help Center'),
-        ),
         _buildModernOptionItem(
           Icons.feedback_outlined,
           'Send Feedback',
@@ -658,13 +468,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'Sign Out',
           'Sign out of your account',
           () => _showLogoutDialog(authController),
-          isDestructive: true,
-        ),
-        _buildModernOptionItem(
-          Icons.clear_all,
-          'Clear Session (Test)',
-          'Clear session data for testing',
-          () => _showClearSessionDialog(authController),
           isDestructive: true,
         ),
       ],
@@ -780,302 +583,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                );
   }
 
-  void _showClearSessionDialog(AuthController authController) {
-               Get.defaultDialog(
-                 title: "Clear Session",
-      titleStyle: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-                 middleText: "This will clear your session data and force you to login again. Useful for testing auto-logout functionality.",
-      middleTextStyle: GoogleFonts.poppins(),
-      textConfirm: "Clear Session",
-                 textCancel: "Cancel",
-                 confirmTextColor: Colors.white,
-      buttonColor: Colors.orange,
-                 onConfirm: () {
-                   authController.forceClearSession();
-                   Get.back();
-                   Get.snackbar(
-                     '🧪 Session Cleared',
-                     'Your session has been cleared. You will see the login screen on next app launch.',
-                     snackPosition: SnackPosition.TOP,
-                     backgroundColor: Colors.teal.shade600,
-                     colorText: Colors.white,
-                     duration: const Duration(seconds: 3),
-                     margin: const EdgeInsets.all(16),
-                     borderRadius: 12,
-                     icon: const Icon(Icons.info_outline, color: Colors.white),
-                     shouldIconPulse: true,
-                     barBlur: 10,
-                     overlayBlur: 0.5,
-                     animationDuration: const Duration(milliseconds: 500),
-                     forwardAnimationCurve: Curves.easeOutBack,
-                     reverseAnimationCurve: Curves.easeInBack,
-                   );
-                 },
-               );
-  }
 
-  Widget _buildAppearanceSection() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF059669).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(
-                  Icons.palette_outlined,
-                  color: Color(0xFF059669),
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Appearance',
-                      style: GoogleFonts.poppins(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade800,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Choose your preferred theme',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Theme Options with Preview
-          Row(
-            children: [
-              // Light Mode Preview
-              Expanded(
-                child: _buildThemePreview(
-                  title: 'Light Mode',
-                  isSelected: !_isDarkMode,
-                  isLight: true,
-                  onTap: () {
-                    setState(() {
-                      _isDarkMode = false;
-                    });
-                    _toggleTheme(false);
-                  },
-                ),
-              ),
-              
-              const SizedBox(width: 12),
-              
-              // Dark Mode Preview
-              Expanded(
-                child: _buildThemePreview(
-                  title: 'Dark Mode',
-                  isSelected: _isDarkMode,
-                  isLight: false,
-                  onTap: () {
-                    setState(() {
-                      _isDarkMode = true;
-                    });
-                    _toggleTheme(true);
-                  },
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildThemePreview({
-    required String title,
-    required bool isSelected,
-    required bool isLight,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF059669).withOpacity(0.1) : Colors.grey.shade50,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF059669) : Colors.grey.shade300,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            // Preview Card
-            Container(
-              height: 60,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isLight ? Colors.white : Colors.grey.shade800,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: isLight ? Colors.grey.shade300 : Colors.grey.shade600,
-                  width: 1,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  // Header bar
-                  Container(
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: isLight ? const Color(0xFF059669) : Colors.grey.shade700,
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(7),
-                        topRight: Radius.circular(7),
-                      ),
-                    ),
-                  ),
-                  
-                  // Content dots
-                  Positioned(
-                    top: 25,
-                    left: 8,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 4,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: isLight ? Colors.grey.shade400 : Colors.grey.shade500,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Container(
-                          width: 4,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: isLight ? Colors.grey.shade400 : Colors.grey.shade500,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Container(
-                          width: 4,
-                          height: 4,
-                          decoration: BoxDecoration(
-                            color: isLight ? Colors.grey.shade400 : Colors.grey.shade500,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Bottom line
-                  Positioned(
-                    bottom: 8,
-                    left: 8,
-                    right: 8,
-                    child: Container(
-                      height: 2,
-                      decoration: BoxDecoration(
-                        color: isLight ? Colors.grey.shade300 : Colors.grey.shade600,
-                        borderRadius: BorderRadius.circular(1),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Title and Selection
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  isLight ? Icons.light_mode : Icons.dark_mode,
-                  size: 16,
-                  color: isSelected ? const Color(0xFF059669) : Colors.grey.shade600,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: isSelected ? const Color(0xFF059669) : Colors.grey.shade600,
-                  ),
-                ),
-                if (isSelected) ...[
-                  const SizedBox(width: 4),
-                  const Icon(
-                    Icons.check_circle,
-                    size: 16,
-                    color: Color(0xFF059669),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
-  void _toggleTheme(bool isDark) {
-    // Implement theme switching logic here
-    if (isDark) {
-      Get.changeTheme(ThemeData.dark().copyWith(
-        primaryColor: const Color(0xFF059669),
-        colorScheme: const ColorScheme.dark(primary: Color(0xFF059669)),
-      ));
-      Get.snackbar(
-        '🌙 Dark Mode',
-        'Dark mode has been enabled!',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF059669),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.dark_mode, color: Colors.white),
-      );
-    } else {
-      Get.changeTheme(ThemeData.light().copyWith(
-        primaryColor: const Color(0xFF059669),
-        colorScheme: const ColorScheme.light(primary: Color(0xFF059669)),
-      ));
-      Get.snackbar(
-        '☀️ Light Mode',
-        'Light mode has been enabled!',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF059669),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.light_mode, color: Colors.white),
-      );
-    }
-  }
 
   void _showComingSoonDialog(String feature) {
     Get.defaultDialog(

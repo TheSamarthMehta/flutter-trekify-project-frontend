@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:trekify/utils/snackbar_helper.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,10 +26,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _saveSettings() {
     // Save settings to storage (you can implement this with GetStorage)
-    SnackbarHelper.showSuccess(
-      'Settings Saved',
-      'Your settings have been saved successfully!',
-    );
+    Get.snackbar('Success', 'Your settings have been saved successfully!');
   }
 
   @override
@@ -129,10 +125,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 setState(() {
                   _notificationsEnabled = value;
                 });
-                SnackbarHelper.showSuccess(
-                  'Notifications',
-                  _notificationsEnabled ? 'Notifications enabled!' : 'Notifications disabled!',
-                );
+                Get.snackbar('Success', _notificationsEnabled ? 'Notifications enabled!' : 'Notifications disabled!');
               },
               activeColor: const Color(0xFF059669),
             ),
@@ -193,10 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: null,
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
             onTap: () {
-              SnackbarHelper.showInfo(
-                'Privacy Policy',
-                'Privacy policy will be available soon!',
-              );
+              Get.snackbar('Info', 'Privacy policy will be available soon!');
             },
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
@@ -208,10 +198,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             subtitle: null,
             trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
             onTap: () {
-              SnackbarHelper.showInfo(
-                'Terms of Service',
-                'Terms of service will be available soon!',
-              );
+              Get.snackbar('Info', 'Terms of service will be available soon!');
             },
           ),
           const Divider(height: 1, indent: 16, endIndent: 16),
@@ -303,19 +290,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
         primaryColor: const Color(0xFF059669),
         colorScheme: const ColorScheme.dark(primary: Color(0xFF059669)),
       ));
-      SnackbarHelper.showSuccess(
-        'Dark Mode',
-        'Dark mode has been enabled!',
-      );
+      Get.snackbar('Success', 'Dark mode has been enabled!');
     } else {
       Get.changeTheme(ThemeData.light().copyWith(
         primaryColor: const Color(0xFF059669),
         colorScheme: const ColorScheme.light(primary: Color(0xFF059669)),
       ));
-      SnackbarHelper.showSuccess(
-        'Light Mode',
-        'Light mode has been enabled!',
-      );
+      Get.snackbar('Success', 'Light mode has been enabled!');
     }
   }
 
@@ -472,10 +453,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             onPressed: () {
               Get.back();
-              SnackbarHelper.showError(
-                'Account Deletion',
-                'Account deletion feature will be available soon!',
-              );
+              Get.snackbar('Error', 'Account deletion feature will be available soon!');
             },
             child: Text(
               'Delete',

@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:trekify/controllers/auth_controller.dart';
-import 'package:trekify/utils/snackbar_helper.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -91,18 +90,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       authController.updateUserProfile(_nameController.text.trim());
       
       // Show success message
-      SnackbarHelper.showSuccess(
-        'Profile Updated',
-        'Your profile has been updated successfully!',
-      );
+      Get.snackbar('Success', 'Profile updated successfully');
       
       // Navigate back
       Get.back();
     } catch (e) {
-      SnackbarHelper.showError(
-        'Update Failed',
-        'Failed to update profile. Please try again.',
-      );
+      Get.snackbar('Error', 'Failed to update profile. Please try again.');
     } finally {
       setState(() => _isLoading = false);
     }
@@ -128,19 +121,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         
         print('Image selected: ${image.path}');
         
-        SnackbarHelper.showSuccess(
-          'Image Selected',
-          'Profile picture updated successfully!',
-        );
+        Get.snackbar('Success', 'Profile picture updated successfully');
       } else {
         print('No image selected from gallery');
       }
     } catch (e) {
       print('Gallery error: $e');
-      SnackbarHelper.showError(
-        'Image Selection Failed',
-        'Failed to select image. Please check permissions and try again.',
-      );
+      Get.snackbar('Error', 'Failed to select image. Please check permissions and try again.');
     }
   }
 
@@ -164,19 +151,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         
         print('Photo taken: ${image.path}');
         
-        SnackbarHelper.showSuccess(
-          'Photo Taken',
-          'Profile picture updated successfully!',
-        );
+        Get.snackbar('Success', 'Profile picture updated successfully');
       } else {
         print('No photo taken from camera');
       }
     } catch (e) {
       print('Camera error: $e');
-      SnackbarHelper.showError(
-        'Camera Failed',
-        'Failed to take photo. Please check camera permissions and try again.',
-      );
+      Get.snackbar('Error', 'Failed to take photo. Please check camera permissions and try again.');
     }
   }
 
@@ -939,10 +920,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onPressed: () {
               if (passwordFormKey.currentState!.validate()) {
                 Get.back();
-                SnackbarHelper.showSuccess(
-                  'Password Updated',
-                  'Your password has been changed successfully!',
-                );
+                Get.snackbar('Success', 'Password updated successfully');
               }
             },
             child: const Text('Update'),
@@ -1026,10 +1004,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             onPressed: () {
               if (phoneFormKey.currentState!.validate()) {
                 Get.back();
-                SnackbarHelper.showSuccess(
-                  'Verification Sent',
-                  'A verification code has been sent to your phone!',
-                );
+                Get.snackbar('Success', 'Verification code sent to your phone');
               }
             },
             child: const Text('Send Code'),
@@ -1099,10 +1074,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             onPressed: () {
               Get.back();
-              SnackbarHelper.showInfo(
-                'Coming Soon',
-                'Two-factor authentication will be available soon!',
-              );
+              Get.snackbar('Info', 'Two-factor authentication will be available soon');
             },
             child: const Text('Enable'),
           ),
@@ -1171,10 +1143,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             onPressed: () {
               Get.back();
-              SnackbarHelper.showInfo(
-                'Coming Soon',
-                'Account deletion feature will be available soon!',
-              );
+              Get.snackbar('Info', 'Account deletion feature will be available soon');
             },
             child: const Text('Delete Account'),
           ),

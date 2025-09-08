@@ -1,4 +1,3 @@
-// lib/views/main_screen.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:trekify/controllers/app_drawer_controller.dart';
@@ -22,11 +21,10 @@ class MainScreen extends GetView<AppDrawerController> {
       const ProfileScreen(),
     ];
 
-    // ✅ EDITED: WillPopScope now calls the new controller method.
     return WillPopScope(
       onWillPop: controller.handleBackButton,
       child: Scaffold(
-        backgroundColor: Colors.grey.shade50, // Consistent background color
+        backgroundColor: Colors.grey.shade50,
         drawer: CustomDrawer(),
         body: Obx(() => IndexedStack(
           index: controller.selectedIndex.value,

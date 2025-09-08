@@ -1,8 +1,8 @@
-// lib/controllers/trek_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:trekify/models/trek_model.dart';
 import 'package:trekify/services/trek_service.dart';
+import 'package:trekify/controllers/home_controller.dart';
 import 'dart:developer' as developer;
 import 'package:collection/collection.dart';
 
@@ -73,6 +73,16 @@ class TrekController extends GetxController {
     return "All Treks";
   }
 
+  bool hasActiveFilters() {
+    return selectedDifficulties.isNotEmpty || 
+           selectedSeasons.isNotEmpty || 
+           selectedTypes.isNotEmpty || 
+           selectedAgeGroups.isNotEmpty || 
+           selectedDistances.isNotEmpty || 
+           selectedStates.isNotEmpty ||
+           searchQuery.value.isNotEmpty;
+  }
+
   // ✅ EDITED: Renamed method and removed the initial check to allow pre-loading.
   Future<void> fetchTreks() async {
     isLoading(true);
@@ -87,6 +97,10 @@ class TrekController extends GetxController {
         final treks = result['data'] as List<Trek>;
         allTreks.assignAll(treks);
         applyFilters();
+        
+        // Featured treks are now static in home controller
+        // No need to update them with random trek data
+        
         developer.log('Successfully loaded ${treks.length} treks', name: 'TrekController');
       } else {
         errorMessage.value = result['error'];
@@ -106,15 +120,7 @@ class TrekController extends GetxController {
 
   /// Show error message to user
   void _showErrorSnackbar(String message) {
-    Get.snackbar(
-      'Connection Error',
-      message,
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.red.shade100,
-      colorText: Colors.red.shade900,
-      duration: const Duration(seconds: 4),
-      icon: const Icon(Icons.error_outline, color: Colors.red),
-    );
+    Get.snackbar('Error', message);
   }
 
   /// Retry fetching treks
@@ -300,14 +306,7 @@ class TrekController extends GetxController {
         !equality.equals(selectedDistances, tempSelectedDistances);
 
     if (filtersChanged) {
-      Get.snackbar(
-        'Filters Not Applied',
-        'Your filter changes have not been saved. Tap "Apply" to see the results.',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.black87,
-        colorText: Colors.white,
-        margin: const EdgeInsets.all(12),
-      );
+      Get.snackbar('Warning', 'Your filter changes have not been saved. Tap "Apply" to see the results.');
     }
   }
 }

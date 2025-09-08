@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:trekify/utils/snackbar_helper.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -464,44 +463,26 @@ class AboutScreen extends StatelessWidget {
 
   // Action methods
   void _launchEmail() {
-    SnackbarHelper.showInfo(
-      'Email',
-      'Email support@trekify.com will be available soon!',
-    );
+    Get.snackbar('Info', 'Email support will be available soon');
   }
 
   void _launchPhone() {
-    SnackbarHelper.showInfo(
-      'Phone',
-      'Phone support will be available soon!',
-    );
+    Get.snackbar('Info', 'Phone support will be available soon');
   }
 
   void _launchWebsite() {
-    SnackbarHelper.showInfo(
-      'Website',
-      'Website www.trekify.com will be available soon!',
-    );
+    Get.snackbar('Info', 'Website will be available soon');
   }
 
   void _launchSocial(String platform) {
-    SnackbarHelper.showInfo(
-      'Social Media',
-      '$platform page will be available soon!',
-    );
+    Get.snackbar('Info', '$platform page will be available soon');
   }
 
   void _launchPrivacyPolicy() {
-    SnackbarHelper.showInfo(
-      'Privacy Policy',
-      'Privacy policy will be available soon!',
-    );
+    Get.snackbar('Info', 'Privacy policy will be available soon');
   }
 
   void _launchTermsOfService() {
-    SnackbarHelper.showInfo(
-      'Terms of Service',
-      'Terms of service will be available soon!',
-    );
+    Get.snackbar('Info', 'Terms of service will be available soon');
   }
 }

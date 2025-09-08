@@ -59,60 +59,12 @@ class _LoginScreenState extends State<LoginScreen> {
           });
         }
       } else if (result['code'] == 'invalid_password') {
-        Get.snackbar(
-          '🔒 Invalid Password', 
-          result['message'] ?? 'Please check your password and try again.',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF1E3A8A),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          icon: const Icon(Icons.lock, color: Colors.white),
-          shouldIconPulse: true,
-          barBlur: 10,
-          overlayBlur: 0.5,
-          animationDuration: const Duration(milliseconds: 500),
-          forwardAnimationCurve: Curves.easeOutBack,
-          reverseAnimationCurve: Curves.easeInBack,
-        );
+        Get.snackbar('Error', result['message'] ?? 'Please check your password and try again.');
       } else {
-        Get.snackbar(
-          '❌ Login Failed', 
-          result['message'] ?? 'Please try again',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: const Color(0xFF1E3A8A),
-          colorText: Colors.white,
-          duration: const Duration(seconds: 3),
-          margin: const EdgeInsets.all(16),
-          borderRadius: 12,
-          icon: const Icon(Icons.error_outline, color: Colors.white),
-          shouldIconPulse: true,
-          barBlur: 10,
-          overlayBlur: 0.5,
-          animationDuration: const Duration(milliseconds: 500),
-          forwardAnimationCurve: Curves.easeOutBack,
-          reverseAnimationCurve: Curves.easeInBack,
-        );
+        Get.snackbar('Error', result['message'] ?? 'Please try again');
       }
     } catch (e) {
-      Get.snackbar(
-        '⚠️ Error', 
-        'An unexpected error occurred. Please try again.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: const Color(0xFF1E3A8A),
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.error_outline, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Error', 'An unexpected error occurred. Please try again.');
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

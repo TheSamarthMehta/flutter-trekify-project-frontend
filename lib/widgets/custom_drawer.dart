@@ -1,9 +1,7 @@
-// lib/widgets/custom_drawer.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../controllers/app_drawer_controller.dart';
-import '../utils/network_utils.dart';
 
 class CustomDrawer extends StatelessWidget {
   CustomDrawer({super.key});
@@ -394,19 +392,7 @@ class CustomDrawer extends StatelessWidget {
                 ),
               ),
               
-                             // Social/Support Icons
-               Row(
-                 children: [
-                                       _buildFooterIcon(Icons.help_outline_rounded, 'Help'),
-                    const SizedBox(width: 10),
-                    _buildFooterIcon(Icons.info_outline_rounded, 'About'),
-                    const SizedBox(width: 10),
-                                       _buildFooterIcon(Icons.wifi_find_rounded, 'Network', onTap: () {
-                      Get.back(); // Close drawer
-                      NetworkUtils.showNetworkDiagnostic();
-                    }),
-                 ],
-               ),
+                             // Social/Support Icons - Removed as requested
             ],
           ),
         ],
@@ -414,37 +400,4 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildFooterIcon(IconData icon, String tooltip, {VoidCallback? onTap}) {
-    Widget iconWidget = Container(
-      padding: const EdgeInsets.all(5),
-             decoration: BoxDecoration(
-         color: Colors.grey.shade200,
-         borderRadius: BorderRadius.circular(6),
-       ),
-       child: Icon(
-         icon,
-         color: Colors.grey.shade600,
-        size: 14,
-      ),
-    );
-
-    if (onTap != null) {
-      return Tooltip(
-        message: tooltip,
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(10),
-            onTap: onTap,
-            child: iconWidget,
-          ),
-        ),
-      );
-    }
-
-    return Tooltip(
-      message: tooltip,
-      child: iconWidget,
-    );
-  }
 }

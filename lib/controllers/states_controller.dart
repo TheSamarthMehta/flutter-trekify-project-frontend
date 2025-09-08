@@ -1,4 +1,3 @@
-// lib/controllers/states_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -143,66 +142,18 @@ class StatesController extends GetxController {
     
     if (_currentUserId == null) {
       print('❌ No user logged in');
-      Get.snackbar(
-        '🔒 Login Required',
-        'Please log in to track your progress',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade600,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.lock, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Login Required', 'Please login to continue');
       return;
     }
     
     if (exploredTreks.contains(trekName)) {
       exploredTreks.remove(trekName);
       print('🗑️ Removed from explored: $trekName');
-      Get.snackbar(
-        '🗑️ Removed from Progress',
-        '$trekName has been removed from your explored treks',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade400,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.remove_circle_outline, color: Colors.white),
-        shouldIconPulse: false,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Removed', '$trekName removed from progress');
     } else {
       exploredTreks.add(trekName);
       print('✅ Added to explored: $trekName');
-      Get.snackbar(
-        '✅ Added to Progress',
-        '$trekName has been added to your explored treks',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade700,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.check_circle, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Added', '$trekName added to progress');
     }
     _saveExploredTreks();
     exploredTreks.refresh(); // Important for updating UIs observing this set

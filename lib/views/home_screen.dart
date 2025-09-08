@@ -76,7 +76,7 @@ class _HomeScreenContent extends StatelessWidget {
     final statusBarHeight = MediaQuery.of(context).padding.top;
     
     return Container(
-      height: 200 + statusBarHeight, // Add status bar height to total height
+      height: 180 + statusBarHeight, // Add status bar height to total height
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -124,11 +124,6 @@ class _HomeScreenContent extends StatelessWidget {
             left: 24,
             child: _buildMenuButton(context),
           ),
-          Positioned(
-            top: statusBarHeight + 16, // Add status bar height to top position
-            right: 24,
-            child: _buildNotificationButton(),
-          ),
           
           // Hero Title - Fixed position
           Positioned(
@@ -167,31 +162,6 @@ class _HomeScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildNotificationButton() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.25),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: IconButton(
-        icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 26),
-        onPressed: () {
-          // Handle notifications
-        },
-      ),
-    );
-  }
 
 
 
@@ -251,22 +221,22 @@ class _HomeScreenContent extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSearchSection(),
-            const SizedBox(height: 36),
+            const SizedBox(height: 24),
             _buildFeaturedTreksSection(),
-            const SizedBox(height: 44),
+            const SizedBox(height: 28),
             _buildStatisticsSection(),
-            const SizedBox(height: 44),
+            const SizedBox(height: 28),
             _buildDifficultySection(),
-            const SizedBox(height: 44),
+            const SizedBox(height: 28),
             _buildTrekTypesSection(),
-            const SizedBox(height: 44),
+            const SizedBox(height: 28),
             _buildSeasonalSection(),
-            const SizedBox(height: 32),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -284,17 +254,7 @@ class _HomeScreenContent extends StatelessWidget {
         // Handle search submission
         if (query.trim().isNotEmpty) {
           // Show loading state briefly
-          Get.snackbar(
-            '🔍 Searching...', 
-            'Finding treks matching "${query.trim()}"',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.blue.shade600,
-            colorText: Colors.white,
-            duration: const Duration(seconds: 1),
-            margin: const EdgeInsets.all(16),
-            borderRadius: 12,
-            icon: const Icon(Icons.search, color: Colors.white),
-          );
+          Get.snackbar('Search', 'Searching for "${query.trim()}"...');
           
           // Update the search query in trek controller
           trekController.updateSearchQuery(query.trim());
@@ -320,9 +280,9 @@ class _HomeScreenContent extends StatelessWidget {
           Icons.star_rounded,
           const Color(0xFFF59E0B),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         SizedBox(
-          height: 260,
+          height: 320,
           child: Obx(() {
             // Check for network errors first
             if (trekController.errorMessage.value != null) {
@@ -355,12 +315,11 @@ class _HomeScreenContent extends StatelessWidget {
               itemBuilder: (context, index) {
                 final trek = homeController.featuredTreks[index];
                 return Container(
-                  margin: const EdgeInsets.only(right: 20),
+                  margin: const EdgeInsets.only(right: 16),
                   child: FeaturedTrekCard(
                     title: trek['title'] ?? 'Unknown Trek',
                     location: trek['location'] ?? 'Unknown Location',
                     difficulty: trek['difficulty'] ?? 'Moderate',
-                    rating: trek['rating'] ?? '4.0',
                     imageUrl: trek['imageUrl'] ?? '',
                     onTap: () {
                       print('Featured trek tapped: ${trek['title']}');
@@ -384,7 +343,7 @@ class _HomeScreenContent extends StatelessWidget {
           Icons.analytics_rounded,
           const Color(0xFF6366F1),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -396,7 +355,7 @@ class _HomeScreenContent extends StatelessWidget {
                 suffix: '+',
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: TrekStatCard(
                 icon: Icons.location_on_rounded,
@@ -406,7 +365,7 @@ class _HomeScreenContent extends StatelessWidget {
                 suffix: '+',
               ),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: TrekStatCard(
                 icon: Icons.star_rounded,
@@ -438,9 +397,9 @@ class _HomeScreenContent extends StatelessWidget {
           Icons.fitness_center_rounded,
           const Color(0xFFEF4444),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         SizedBox(
-          height: 220,
+          height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -449,7 +408,7 @@ class _HomeScreenContent extends StatelessWidget {
             itemBuilder: (context, index) {
               final level = difficultyOptions[index];
               return Container(
-                margin: const EdgeInsets.only(right: 20),
+                margin: const EdgeInsets.only(right: 16),
                 child: DifficultyCard(
                   title: level,
                   imageUrl: difficultyImageUrls[level] ?? '',
@@ -496,7 +455,7 @@ class _HomeScreenContent extends StatelessWidget {
             itemBuilder: (context, index) {
               final type = trekTypes[index];
               return Container(
-                margin: const EdgeInsets.only(right: 20),
+                margin: const EdgeInsets.only(right: 16),
                 child: TrekTypeCard(
                   title: type,
                   imageUrl: trekTypeImageUrls[type] ?? '',
@@ -515,11 +474,9 @@ class _HomeScreenContent extends StatelessWidget {
   }
 
   Widget _buildSeasonalSection() {
-    final seasons = const ['Spring', 'Summer', 'Autumn', 'Winter', 'Monsoon'];
+    final seasons = const ['Summer', 'Winter', 'Monsoon'];
     final seasonImageUrls = {
-      'Spring': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843946/spring_lpsuye.jpg',
       'Summer': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843343/summer_dzcwmb.jpg',
-      'Autumn': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843368/autumn_etoy7u.jpg',
       'Winter': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843353/winter_oj4ise.jpg',
       'Monsoon': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843391/monsoon_becpgn.jpg',
     };
@@ -532,9 +489,9 @@ class _HomeScreenContent extends StatelessWidget {
           Icons.wb_sunny_rounded,
           const Color(0xFFF97316),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
         SizedBox(
-          height: 220,
+          height: 200,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -543,7 +500,7 @@ class _HomeScreenContent extends StatelessWidget {
             itemBuilder: (context, index) {
               final season = seasons[index];
               return Container(
-                margin: const EdgeInsets.only(right: 20),
+                margin: const EdgeInsets.only(right: 16),
                 child: SeasonCard(
                   title: season,
                   imageUrl: seasonImageUrls[season] ?? '',
@@ -565,44 +522,30 @@ class _HomeScreenContent extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                color.withOpacity(0.2),
-                color.withOpacity(0.1),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(16),
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: color.withOpacity(0.25),
-              width: 1.5,
+              color: color.withOpacity(0.2),
+              width: 1,
             ),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
           ),
           child: Icon(
             icon,
             color: color,
-            size: 24,
+            size: 20,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             title,
             style: GoogleFonts.poppins(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
               color: const Color(0xFF1F2937),
-              letterSpacing: -0.5,
+              letterSpacing: -0.3,
             ).copyWith(
               fontFamilyFallback: ['Roboto', 'Arial', 'sans-serif'],
             ),

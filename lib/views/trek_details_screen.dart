@@ -269,16 +269,7 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
         child: FloatingActionButton.extended(
           onPressed: () {
             itineraryController.addToItinerary(controller.trek.value!);
-            Get.snackbar(
-              'Added to Itinerary',
-              '${controller.trek.value!.trekName} has been added to your itinerary',
-              snackPosition: SnackPosition.BOTTOM,
-              backgroundColor: Colors.teal,
-              colorText: Colors.white,
-              margin: const EdgeInsets.all(16),
-              borderRadius: 12,
-              icon: const Icon(Icons.check_circle, color: Colors.white),
-            );
+            Get.snackbar('Added', '${controller.trek.value!.trekName} added to itinerary');
           },
           label: Text(
             'ADD TO ITINERARY',

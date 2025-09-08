@@ -1,4 +1,3 @@
-// lib/controllers/itinerary_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -38,66 +37,18 @@ class ItineraryController extends GetxController {
     
     if (_currentUserId == null) {
       print('❌ No user logged in');
-      Get.snackbar(
-        '🔒 Login Required',
-        'Please log in to manage your itinerary',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade600,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.lock, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Login Required', 'Please login to continue');
       return;
     }
     
     if (itineraryTreks.any((t) => t.trekName == trek.trekName)) {
       print('⚠️ Trek already in itinerary');
-      Get.snackbar(
-        '⚠️ Already Added',
-        '${trek.trekName} is already in your itinerary',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade400,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.info_outline, color: Colors.white),
-        shouldIconPulse: false,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Warning', '${trek.trekName} is already in your itinerary');
     } else {
       itineraryTreks.add(trek);
       _saveItinerary();
       print('✅ Added to itinerary: ${trek.trekName}');
-      Get.snackbar(
-        '✅ Added to Itinerary',
-        '${trek.trekName} has been added to your itinerary!',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade700,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.check_circle, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Added', '${trek.trekName} added to itinerary');
     }
   }
 

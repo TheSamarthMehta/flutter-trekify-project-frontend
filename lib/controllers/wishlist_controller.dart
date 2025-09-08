@@ -1,4 +1,3 @@
-// lib/controllers/wishlist_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -44,66 +43,18 @@ class WishlistController extends GetxController {
     
     if (_currentUserId == null) {
       print('❌ No user logged in');
-      Get.snackbar(
-        '🔒 Login Required',
-        'Please log in to manage your wishlist',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade600,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 3),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.lock, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Login Required', 'Please login to continue');
       return;
     }
     
     if (isInWishlist(trek)) {
       wishlistItems.removeWhere((item) => item.trekName == trek.trekName);
       print('🗑️ Removed from wishlist: ${trek.trekName}');
-      Get.snackbar(
-        '🗑️ Removed from Wishlist',
-        '${trek.trekName} has been removed from your wishlist',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade400,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.remove_circle_outline, color: Colors.white),
-        shouldIconPulse: false,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Removed', '${trek.trekName} removed from wishlist');
     } else {
       wishlistItems.add(trek);
       print('❤️ Added to wishlist: ${trek.trekName}');
-      Get.snackbar(
-        '❤️ Added to Wishlist',
-        '${trek.trekName} has been added to your wishlist',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.teal.shade700,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 2),
-        margin: const EdgeInsets.all(16),
-        borderRadius: 12,
-        icon: const Icon(Icons.favorite, color: Colors.white),
-        shouldIconPulse: true,
-        barBlur: 10,
-        overlayBlur: 0.5,
-        animationDuration: const Duration(milliseconds: 500),
-        forwardAnimationCurve: Curves.easeOutBack,
-        reverseAnimationCurve: Curves.easeInBack,
-      );
+      Get.snackbar('Added', '${trek.trekName} added to wishlist');
     }
     _saveWishlist(); // Save changes to storage
   }

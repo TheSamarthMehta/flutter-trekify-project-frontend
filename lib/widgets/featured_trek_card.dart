@@ -5,7 +5,6 @@ class FeaturedTrekCard extends StatelessWidget {
   final String title;
   final String location;
   final String difficulty;
-  final String rating;
   final String imageUrl;
   final VoidCallback? onTap;
 
@@ -14,7 +13,6 @@ class FeaturedTrekCard extends StatelessWidget {
     required this.title,
     required this.location,
     required this.difficulty,
-    required this.rating,
     required this.imageUrl,
     this.onTap,
   });
@@ -146,27 +144,6 @@ class FeaturedTrekCard extends StatelessWidget {
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      
-                      // Rating only (no duration)
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber.shade400,
-                            size: 18,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            rating,
-                            style: GoogleFonts.poppins(
-                              color: Colors.white.withOpacity(0.9),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],

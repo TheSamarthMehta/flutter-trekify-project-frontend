@@ -77,7 +77,7 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
         statusBarColor: Colors.transparent,
         statusBarIconBrightness: Brightness.light,
         statusBarBrightness: Brightness.dark,
-        systemNavigationBarColor: Colors.transparent,
+        systemNavigationBarColor: Colors.black,
         systemNavigationBarIconBrightness: Brightness.light,
       ),
       child: GestureDetector(
@@ -161,84 +161,7 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildStatsAndViewToggle() {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(12, 32, 12, 20),
-      child: Column(
-        children: [
-          // Stats Row
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  'Total Treks',
-                  '${controller.filteredTreks.length}',
-                  Icons.terrain_rounded,
-                  const Color(0xFF3B82F6),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  'States',
-                  '${controller.uniqueStates.length}',
-                  Icons.map_rounded,
-                  const Color(0xFF10B981),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  'Types',
-                  '${controller.uniqueTypes.length}',
-                  Icons.category_rounded,
-                  const Color(0xFFF59E0B),
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 16),
-          
-          // Enhanced Control Section
-          _buildEnhancedControlSection(),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
-          ),
-          Text(
-            title,
-            style: GoogleFonts.poppins(
-              fontSize: 11,
-              color: Colors.grey.shade600,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildCompactFilterIndicator() {
     return Obx(() {
@@ -288,82 +211,7 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
     });
   }
 
-  Widget _buildEnhancedControlSection() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Row(
-        children: [
-          // Left side - Stats
-          Expanded(
-            child: _buildCompactQuickStats(),
-          ),
-          
-          const SizedBox(width: 12),
-          
-          // Right side - Sort Button only
-          _buildSortButton(),
-        ],
-      ),
-    );
-  }
 
-  Widget _buildCompactQuickStats() {
-    return Obx(() {
-      final totalTreks = controller.filteredTreks.length;
-      final totalStates = controller.uniqueStates.length;
-      
-      return Row(
-        children: [
-          _buildCompactStatChip(
-            icon: Icons.trending_up_rounded,
-            label: '$totalTreks',
-            color: Colors.blue.shade600,
-          ),
-          const SizedBox(width: 6),
-          _buildCompactStatChip(
-            icon: Icons.map_rounded,
-            label: '$totalStates',
-            color: Colors.green.shade600,
-          ),
-        ],
-      );
-    });
-  }
-
-  Widget _buildCompactStatChip({
-    required IconData icon,
-    required String label,
-    required Color color,
-  }) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 10, color: color),
-          const SizedBox(width: 3),
-          Text(
-            label,
-            style: GoogleFonts.poppins(
-              fontSize: 9,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildQuickStatChip({
     required IconData icon,
@@ -728,8 +576,10 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
   }
 
   Widget _buildTreksHeader(BuildContext context) {
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    
     return Container(
-      height: 200,
+      height: 200 + statusBarHeight,
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -767,24 +617,24 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
           
           // Navigation Buttons
           Positioned(
-            top: 50,
+            top: statusBarHeight + 16,
             left: 24,
             child: _buildMenuButton(context),
           ),
           Positioned(
-            top: 50,
+            top: statusBarHeight + 16,
             right: 24,
             child: _buildSearchButton(),
           ),
           Positioned(
-            top: 50,
+            top: statusBarHeight + 16,
             right: 80,
             child: _buildFilterButton(),
           ),
           
           // View Toggle in Header
           Positioned(
-            top: 50,
+            top: statusBarHeight + 16,
             right: 136,
             child: _buildHeaderViewToggle(),
           ),
@@ -874,12 +724,7 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
 
   Widget _buildFilterButton() {
     return Obx(() {
-      final hasActiveFilters = controller.selectedDifficulties.isNotEmpty ||
-          controller.selectedSeasons.isNotEmpty ||
-          controller.selectedTypes.isNotEmpty ||
-          controller.selectedAgeGroups.isNotEmpty ||
-          controller.selectedDistances.isNotEmpty ||
-          controller.selectedStates.isNotEmpty;
+      final hasActiveFilters = controller.hasActiveFilters();
 
       return Container(
         decoration: BoxDecoration(
@@ -927,6 +772,74 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
         ),
       );
     });
+  }
+
+  Widget _buildHeaderViewToggle() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.25),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildHeaderToggleButton(
+            icon: Icons.view_list_rounded,
+            isSelected: !_isGridView,
+            onTap: () {
+              setState(() {
+                _isGridView = false;
+              });
+              _gridAnimationController.reverse();
+            },
+          ),
+          _buildHeaderToggleButton(
+            icon: Icons.grid_view_rounded,
+            isSelected: _isGridView,
+            onTap: () {
+              setState(() {
+                _isGridView = true;
+              });
+              _gridAnimationController.forward();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderToggleButton({
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.white.withOpacity(0.3) : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: IconButton(
+        icon: Icon(
+          icon,
+          color: Colors.white,
+          size: 26,
+        ),
+        onPressed: onTap,
+        padding: const EdgeInsets.all(8),
+        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      ),
+    );
   }
 
   Widget _buildHeaderStats() {
@@ -1010,73 +923,6 @@ class _TreksScreenState extends State<TreksScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildHeaderViewToggle() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.25),
-          width: 1.5,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildHeaderToggleButton(
-            icon: Icons.view_list_rounded,
-            isSelected: !_isGridView,
-            onTap: () {
-              setState(() {
-                _isGridView = false;
-              });
-              _gridAnimationController.reverse();
-            },
-          ),
-          _buildHeaderToggleButton(
-            icon: Icons.grid_view_rounded,
-            isSelected: _isGridView,
-            onTap: () {
-              setState(() {
-                _isGridView = true;
-              });
-              _gridAnimationController.forward();
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeaderToggleButton({
-    required IconData icon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isSelected ? Colors.white.withOpacity(0.3) : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: IconButton(
-        icon: Icon(
-          icon,
-          color: Colors.white,
-          size: 26,
-        ),
-        onPressed: onTap,
-        padding: const EdgeInsets.all(8),
-        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-      ),
-    );
-  }
 
   Widget _buildTreksTitle() {
     return Column(

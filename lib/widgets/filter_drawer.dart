@@ -11,7 +11,7 @@ class FilterDrawer extends StatelessWidget {
     final TrekController controller = Get.find<TrekController>();
 
     final difficulties = ['Easy', 'Moderate', 'Difficult'];
-    final seasons = ['Spring', 'Summer', 'Autumn', 'Winter', 'Monsoon'];
+    final seasons = ['Summer', 'Winter', 'Monsoon'];
     final types = ['Fort', 'Lake', 'Jungle', 'Waterfall', 'Hilltop'];
     final distances = ['0-10 km', '11-20 km', '20+ km'];
     final ageGroups = ['0-10 years', '10-18 years', '18-40 years', '40+ years'];
