@@ -73,4 +73,25 @@ class AuthService {
       return {'success': false, 'code': 'error', 'message': e.toString()};
     }
   }
+
+  Future<Map<String, dynamic>> deleteAccount({required String token}) async {
+    try {
+      final uri = await _url(ApiConfig.authDeleteAccount);
+      final response = await http.delete(
+        uri,
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final Map<String, dynamic> body = jsonDecode(response.body);
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'success': true, 'message': body['message'] ?? 'Account deleted successfully'};
+      }
+      return {'success': false, 'code': 'error', 'message': body['message'] ?? 'Failed to delete account'};
+    } catch (e) {
+      return {'success': false, 'code': 'error', 'message': 'Network error. Please check your connection.'};
+    }
+  }
 }

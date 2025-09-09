@@ -202,6 +202,7 @@ class ApiConfig {
   // API endpoints
   static const String authLogin = '/api/auth/login';
   static const String authRegister = '/api/auth/register';
+  static const String authDeleteAccount = '/api/auth/delete-account';
   static const String trekData = '/api/data/';
   
   // Helper method to get full URL for auth endpoints

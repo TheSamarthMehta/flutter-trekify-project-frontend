@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:trekify/controllers/auth_controller.dart';
+import 'package:trekify/widgets/keyboard_dismiss_wrapper.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -20,17 +21,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
-  final TextEditingController _websiteController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ImagePicker _imagePicker = ImagePicker();
   
   bool _isLoading = false;
-  bool _isPasswordVisible = false;
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
-  bool _notificationsEnabled = true;
-  bool _locationSharingEnabled = false;
-  bool _profilePublic = true;
   
   String _selectedGender = 'Prefer not to say';
   String _selectedDateOfBirth = '';
@@ -48,12 +42,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneController.text = authController.user.value?['phone'] ?? '';
     _bioController.text = authController.user.value?['bio'] ?? '';
     _locationController.text = authController.user.value?['location'] ?? '';
-    _websiteController.text = authController.user.value?['website'] ?? '';
     _selectedGender = authController.user.value?['gender'] ?? 'Prefer not to say';
     _selectedDateOfBirth = authController.user.value?['dateOfBirth'] ?? '';
-    _notificationsEnabled = authController.user.value?['notifications'] ?? true;
-    _locationSharingEnabled = authController.user.value?['locationSharing'] ?? false;
-    _profilePublic = authController.user.value?['profilePublic'] ?? true;
   }
 
   @override
@@ -63,7 +53,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _phoneController.dispose();
     _bioController.dispose();
     _locationController.dispose();
-    _websiteController.dispose();
     super.dispose();
   }
 
@@ -79,12 +68,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'phone': _phoneController.text.trim(),
         'bio': _bioController.text.trim(),
         'location': _locationController.text.trim(),
-        'website': _websiteController.text.trim(),
         'gender': _selectedGender,
         'dateOfBirth': _selectedDateOfBirth,
-        'notifications': _notificationsEnabled,
-        'locationSharing': _locationSharingEnabled,
-        'profilePublic': _profilePublic,
       };
       
       authController.updateUserProfile(_nameController.text.trim());
@@ -258,12 +243,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           ),
         ],
       ),
-      body: Form(
+      body: KeyboardDismissWrapper(
+        child: Form(
           key: _formKey,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
               // Profile Picture Section
               _buildProfilePictureSection(),
               const SizedBox(height: 32),
@@ -331,59 +317,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               
               const SizedBox(height: 24),
               
-              // Location & Links
+              // Location
               _buildSection(
-                'Location & Links',
+                'Location',
                 [
                   _buildTextField(
                     controller: _locationController,
                     label: 'Location',
                     icon: Icons.location_on_outlined,
                     helperText: 'City, State, Country',
-                  ),
-                  _buildTextField(
-                    controller: _websiteController,
-                    label: 'Website',
-                    icon: Icons.language,
-                    keyboardType: TextInputType.url,
-                    validator: (value) {
-                      if (value != null && value.isNotEmpty) {
-                        if (!value.startsWith('http://') && !value.startsWith('https://')) {
-                          return 'Please enter a valid URL';
-                        }
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Privacy Settings
-              _buildSection(
-                'Privacy Settings',
-                [
-                  _buildSwitchTile(
-                    title: 'Public Profile',
-                    subtitle: 'Allow others to view your profile',
-                    value: _profilePublic,
-                    onChanged: (value) => setState(() => _profilePublic = value),
-                    icon: Icons.public,
-                  ),
-                  _buildSwitchTile(
-                    title: 'Location Sharing',
-                    subtitle: 'Share your location with friends',
-                    value: _locationSharingEnabled,
-                    onChanged: (value) => setState(() => _locationSharingEnabled = value),
-                    icon: Icons.location_on,
-                  ),
-                  _buildSwitchTile(
-                    title: 'Notifications',
-                    subtitle: 'Receive push notifications',
-                    value: _notificationsEnabled,
-                    onChanged: (value) => setState(() => _notificationsEnabled = value),
-                    icon: Icons.notifications,
                   ),
                 ],
               ),
@@ -399,7 +341,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               _buildUpdateButton(),
               
               const SizedBox(height: 20),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -643,81 +586,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildSwitchTile({
-    required String title,
-    required String subtitle,
-    required bool value,
-    required ValueChanged<bool> onChanged,
-    required IconData icon,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: const Color(0xFF059669).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: const Color(0xFF059669), size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.poppins(
-                    fontSize: 12,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Switch(
-            value: value,
-            onChanged: onChanged,
-            activeColor: const Color(0xFF059669),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSecuritySection() {
     return _buildSection(
       'Security',
       [
-        _buildSecurityOption(
-          icon: Icons.lock_outline,
-          title: 'Change Password',
-          subtitle: 'Update your account password',
-          onTap: () => _showChangePasswordDialog(),
-        ),
-        _buildSecurityOption(
-          icon: Icons.phone_outlined,
-          title: 'Phone Verification',
-          subtitle: 'Add phone number for security',
-          onTap: () => _showPhoneVerificationDialog(),
-        ),
-        _buildSecurityOption(
-          icon: Icons.security,
-          title: 'Two-Factor Authentication',
-          subtitle: 'Add an extra layer of security',
-          onTap: () => _showTwoFactorDialog(),
-        ),
         _buildSecurityOption(
           icon: Icons.delete_outline,
           title: 'Delete Account',
@@ -824,264 +697,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  void _showChangePasswordDialog() {
-    final TextEditingController currentPasswordController = TextEditingController();
-    final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmPasswordController = TextEditingController();
-    final GlobalKey<FormState> passwordFormKey = GlobalKey<FormState>();
-
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Change Password',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Form(
-          key: passwordFormKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: currentPasswordController,
-                obscureText: !_isPasswordVisible,
-                decoration: InputDecoration(
-                  labelText: 'Current Password',
-                  prefixIcon: const Icon(Icons.lock_outline),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => setState(() => _isPasswordVisible = !_isPasswordVisible),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Current password is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: newPasswordController,
-                obscureText: !_isNewPasswordVisible,
-                decoration: InputDecoration(
-                  labelText: 'New Password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isNewPasswordVisible ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => setState(() => _isNewPasswordVisible = !_isNewPasswordVisible),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'New password is required';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: confirmPasswordController,
-                obscureText: !_isConfirmPasswordVisible,
-                decoration: InputDecoration(
-                  labelText: 'Confirm New Password',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => setState(() => _isConfirmPasswordVisible = !_isConfirmPasswordVisible),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please confirm your password';
-                  }
-                  if (value != newPasswordController.text) {
-                    return 'Passwords do not match';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF059669),
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              if (passwordFormKey.currentState!.validate()) {
-                Get.back();
-                Get.snackbar('Success', 'Password updated successfully');
-              }
-            },
-            child: const Text('Update'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showPhoneVerificationDialog() {
-    final TextEditingController phoneController = TextEditingController();
-    final GlobalKey<FormState> phoneFormKey = GlobalKey<FormState>();
-
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Phone Verification',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Form(
-          key: phoneFormKey,
-      child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  prefixIcon: Icon(Icons.phone),
-                  hintText: '+1 (555) 123-4567',
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Phone number is required';
-                  }
-                  if (value.length < 10) {
-                    return 'Enter a valid phone number';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.blue.shade200),
-                ),
-                child: Row(
-        children: [
-                    Icon(Icons.info_outline, color: Colors.blue.shade600, size: 20),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'We will send a verification code to this number',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: Colors.blue.shade700,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF059669),
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              if (phoneFormKey.currentState!.validate()) {
-                Get.back();
-                Get.snackbar('Success', 'Verification code sent to your phone');
-              }
-            },
-            child: const Text('Send Code'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showTwoFactorDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text(
-          'Two-Factor Authentication',
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.security,
-              size: 64,
-              color: const Color(0xFF059669),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Add an extra layer of security to your account',
-              style: GoogleFonts.poppins(),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange.shade200),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.warning_amber, color: Colors.orange.shade600, size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'This feature requires a third-party authenticator app',
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        color: Colors.orange.shade700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF059669),
-              foregroundColor: Colors.white,
-            ),
-            onPressed: () {
-              Get.back();
-              Get.snackbar('Info', 'Two-factor authentication will be available soon');
-            },
-            child: const Text('Enable'),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showDeleteAccountDialog() {
     Get.dialog(
@@ -1141,14 +756,89 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
             ),
-            onPressed: () {
+            onPressed: () async {
               Get.back();
-              Get.snackbar('Info', 'Account deletion feature will be available soon');
+              await _deleteAccount();
             },
             child: const Text('Delete Account'),
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _deleteAccount() async {
+    // Show loading dialog
+    Get.dialog(
+      AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(
+              'Deleting your account...',
+              style: GoogleFonts.poppins(),
+            ),
+          ],
+        ),
+      ),
+      barrierDismissible: false,
+    );
+
+    try {
+      final result = await authController.deleteAccount();
+      
+      // Close loading dialog
+      Get.back();
+      
+      if (result['success'] == true) {
+        // Show success message
+        Get.snackbar(
+          'Account Deleted',
+          result['message'] ?? 'Your account has been deleted successfully',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          icon: const Icon(Icons.check_circle, color: Colors.white),
+        );
+        
+        // Navigate to login screen
+        Get.offAllNamed('/login');
+      } else {
+        // Show error message
+        Get.snackbar(
+          'Error',
+          result['message'] ?? 'Failed to delete account. Please try again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 4),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
+          icon: const Icon(Icons.error, color: Colors.white),
+        );
+      }
+    } catch (e) {
+      // Close loading dialog
+      Get.back();
+      
+      // Show error message
+      Get.snackbar(
+        'Error',
+        'An unexpected error occurred. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 4),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
+        icon: const Icon(Icons.error, color: Colors.white),
+      );
+    }
   }
 }

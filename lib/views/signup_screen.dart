@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:trekify/controllers/auth_controller.dart';
+import 'package:trekify/controllers/app_drawer_controller.dart';
+import 'package:trekify/widgets/keyboard_dismiss_wrapper.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -61,6 +63,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final auth = Get.find<AuthController>();
       final result = await auth.signUp(_nameController.text.trim(), _emailController.text.trim(), _passwordController.text);
       if (result['success'] == true) {
+        // Ensure the app drawer controller is set to home screen (index 0)
+        final appDrawerController = Get.find<AppDrawerController>();
+        appDrawerController.reset(); // This sets selectedIndex to 0 and navigationStack to [0]
         Get.offAllNamed('/');
       } else {
         Get.snackbar('Error', result['message'] ?? 'Please try again');
@@ -73,7 +78,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: KeyboardDismissWrapper(
+        child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -328,6 +334,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             ],
           ),
+        ),
         ),
         ),
       ),

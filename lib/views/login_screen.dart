@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:trekify/controllers/auth_controller.dart';
+import 'package:trekify/widgets/keyboard_dismiss_wrapper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -73,7 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
+      body: KeyboardDismissWrapper(
+        child: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -291,6 +293,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: MediaQuery.of(context).size.height * 0.05),
             ],
           ),
+        ),
         ),
         ),
       ),

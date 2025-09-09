@@ -343,4 +343,27 @@ class AuthController extends GetxController {
     user.value = null;
     print('🧪 Session cleared. User will see login screen on next app launch.');
   }
+
+  /// ✅ NEW: Delete user account
+  Future<Map<String, dynamic>> deleteAccount() async {
+    try {
+      final token = user.value?['token'];
+      if (token == null) {
+        return {'success': false, 'message': 'No authentication token found'};
+      }
+
+      final result = await _authService.deleteAccount(token: token);
+      if (result['success'] == true) {
+        // Clear all user data and session
+        _clearSession();
+        isLoggedIn.value = false;
+        user.value = null;
+        
+        return {'success': true, 'message': result['message'] ?? 'Account deleted successfully'};
+      }
+      return {'success': false, 'message': result['message'] ?? 'Failed to delete account'};
+    } catch (e) {
+      return {'success': false, 'message': 'An error occurred while deleting account'};
+    }
+  }
 }

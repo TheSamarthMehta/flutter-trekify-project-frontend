@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:trekify/controllers/auth_controller.dart';
 import 'package:trekify/controllers/trek_controller.dart';
+import 'package:trekify/controllers/app_drawer_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -111,6 +112,9 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     // Decide where to navigate based on auth state
     if (mounted) {
       if (auth.isLoggedIn.isTrue) {
+        // Ensure the app drawer controller is set to home screen (index 0)
+        final appDrawerController = Get.find<AppDrawerController>();
+        appDrawerController.reset(); // This sets selectedIndex to 0 and navigationStack to [0]
         Get.offAllNamed('/');
       } else {
         Get.offAllNamed('/login');

@@ -39,9 +39,6 @@ class AboutScreen extends StatelessWidget {
             _buildContactSection(),
             const SizedBox(height: 24),
             
-            // Social Links
-            _buildSocialLinks(),
-            const SizedBox(height: 24),
             
             // Legal Links
             _buildLegalLinks(),
@@ -308,12 +305,6 @@ class AboutScreen extends StatelessWidget {
               value: '+1 (555) 123-4567',
               onTap: () => _launchPhone(),
             ),
-            _buildContactItem(
-              icon: Icons.web,
-              title: 'Website',
-              value: 'www.trekify.com',
-              onTap: () => _launchWebsite(),
-            ),
           ],
         ),
       ),
@@ -335,87 +326,6 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSocialLinks() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Follow Us',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.teal,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildSocialButton(
-                  icon: Icons.facebook,
-                  label: 'Facebook',
-                  color: Colors.blue,
-                  onTap: () => _launchSocial('facebook'),
-                ),
-                _buildSocialButton(
-                  icon: Icons.camera_alt,
-                  label: 'Instagram',
-                  color: Colors.purple,
-                  onTap: () => _launchSocial('instagram'),
-                ),
-                _buildSocialButton(
-                  icon: Icons.flutter_dash,
-                  label: 'Twitter',
-                  color: Colors.lightBlue,
-                  onTap: () => _launchSocial('twitter'),
-                ),
-                _buildSocialButton(
-                  icon: Icons.play_circle,
-                  label: 'YouTube',
-                  color: Colors.red,
-                  onTap: () => _launchSocial('youtube'),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSocialButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(icon, color: Colors.white, size: 24),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 12),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildLegalLinks() {
     return Card(
@@ -435,20 +345,6 @@ class AboutScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            ListTile(
-              leading: const Icon(Icons.privacy_tip, color: Colors.teal),
-              title: const Text('Privacy Policy'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => _launchPrivacyPolicy(),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.description, color: Colors.teal),
-              title: const Text('Terms of Service'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => _launchTermsOfService(),
-            ),
-            const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.copyright, color: Colors.teal),
               title: const Text('Copyright'),
@@ -470,19 +366,6 @@ class AboutScreen extends StatelessWidget {
     Get.snackbar('Info', 'Phone support will be available soon');
   }
 
-  void _launchWebsite() {
-    Get.snackbar('Info', 'Website will be available soon');
-  }
 
-  void _launchSocial(String platform) {
-    Get.snackbar('Info', '$platform page will be available soon');
-  }
 
-  void _launchPrivacyPolicy() {
-    Get.snackbar('Info', 'Privacy policy will be available soon');
-  }
-
-  void _launchTermsOfService() {
-    Get.snackbar('Info', 'Terms of service will be available soon');
-  }
 }
