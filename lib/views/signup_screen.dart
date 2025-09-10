@@ -298,8 +298,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(height: 24),
                       
                       // Sign In Link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.center,
                         children: [
                           Text(
                             'Already have an account? ',

@@ -170,12 +170,15 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
                             children: [
                               Icon(Icons.location_on_rounded, color: Colors.white.withOpacity(0.9), size: 16),
                               const SizedBox(width: 4),
-                              Text(
-                                '${trek.state}, ${trek.district}',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: Text(
+                                  '${trek.state}, ${trek.district}',
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
@@ -372,6 +375,9 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
     required String value,
     required Color color,
   }) {
+    // Use smaller font size for altitude to fit in one line
+    final fontSize = label.toLowerCase() == 'altitude' ? 14.0 : 16.0;
+    
     return Column(
       children: [
         Icon(icon, color: color, size: 24),
@@ -380,10 +386,12 @@ class TrekDetailsScreen extends GetView<TrekDetailsController> {
           value,
           style: GoogleFonts.poppins(
             color: color,
-            fontSize: 16,
+            fontSize: fontSize,
             fontWeight: FontWeight.bold,
           ),
           textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 2),
         Text(

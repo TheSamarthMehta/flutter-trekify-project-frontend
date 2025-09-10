@@ -10,6 +10,7 @@ import 'package:trekify/widgets/trek_type_card.dart';
 import 'package:trekify/widgets/enhanced_search_bar.dart';
 import 'package:trekify/widgets/trek_stat_card.dart';
 import 'package:trekify/widgets/featured_trek_card.dart';
+import 'package:trekify/models/trek_model.dart';
 
 import '../controllers/app_drawer_controller.dart';
 
@@ -42,6 +43,46 @@ class _HomeScreenContent extends StatelessWidget {
     required this.trekController,
     required this.appDrawerController,
   });
+
+  // Helper method to get appropriate district for each trek
+  String _getDistrictForTrek(String trekName, String state) {
+    switch (trekName.toLowerCase()) {
+      case 'hampta pass':
+        return 'Kullu';
+      case 'sar pass':
+        return 'Kullu';
+      case 'bhrigu lake':
+        return 'Kullu';
+      case 'kedarkantha':
+        return 'Uttarkashi';
+      case 'chandrashila + tungnath trek':
+        return 'Rudraprayag';
+      case 'har ki dun':
+        return 'Uttarkashi';
+      default:
+        return state; // Fallback to state name if trek not found
+    }
+  }
+
+  // Helper method to get appropriate altitude for each trek
+  String _getAltitudeForTrek(String trekName) {
+    switch (trekName.toLowerCase()) {
+      case 'hampta pass':
+        return '4270m';
+      case 'sar pass':
+        return '4220m';
+      case 'bhrigu lake':
+        return '4300m';
+      case 'kedarkantha':
+        return '3810m';
+      case 'chandrashila + tungnath trek':
+        return '3680m';
+      case 'har ki dun':
+        return '3556m';
+      default:
+        return '4000m'; // Default altitude if trek not found
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +323,7 @@ class _HomeScreenContent extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 320,
+          height: 300,
           child: Obx(() {
             // Check for network errors first
             if (trekController.errorMessage.value != null) {
@@ -306,23 +347,65 @@ class _HomeScreenContent extends StatelessWidget {
               );
             }
             
-            // Show featured treks
-            return ListView.builder(
-              scrollDirection: Axis.horizontal,
-              physics: const BouncingScrollPhysics(),
+            // Show featured treks with card-by-card scrolling
+            return PageView.builder(
               itemCount: homeController.featuredTreks.length,
-              padding: const EdgeInsets.symmetric(horizontal: 4),
+              padEnds: false,
+              controller: PageController(
+                viewportFraction: 0.98,
+                initialPage: 0,
+              ),
               itemBuilder: (context, index) {
                 final trek = homeController.featuredTreks[index];
                 return Container(
-                  margin: const EdgeInsets.only(right: 16),
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
                   child: FeaturedTrekCard(
                     title: trek['title'] ?? 'Unknown Trek',
                     location: trek['location'] ?? 'Unknown Location',
                     difficulty: trek['difficulty'] ?? 'Moderate',
                     imageUrl: trek['imageUrl'] ?? '',
                     onTap: () {
-                      print('Featured trek tapped: ${trek['title']}');
+                      // Try to find the actual trek data from the fetched treks
+                      final trekTitle = trek['title'] ?? 'Unknown Trek';
+                      final actualTrek = trekController.allTreks.firstWhereOrNull(
+                        (t) => t.trekName.toLowerCase().contains(trekTitle.toLowerCase()) ||
+                               trekTitle.toLowerCase().contains(t.trekName.toLowerCase())
+                      );
+                      
+                      if (actualTrek != null) {
+                        // Use the actual fetched trek data
+                        Get.toNamed('/trek-details', arguments: actualTrek);
+                      } else {
+                        // Fallback to creating a Trek object from featured trek data
+                        final location = trek['location'] ?? 'Unknown Location';
+                        final state = location.split(',')[0].trim();
+                        
+                        // Get appropriate district based on trek name
+                        String district = _getDistrictForTrek(trekTitle, state);
+                        
+                        // Get appropriate altitude based on trek name
+                        String altitude = _getAltitudeForTrek(trekTitle);
+                        
+                        final trekObject = Trek(
+                          trekName: trekTitle,
+                          state: state,
+                          district: district,
+                          difficulty: trek['difficulty'] ?? 'Moderate',
+                          season: 'All Seasons', // Default season for featured treks
+                          type: 'Mountain', // Default type for featured treks
+                          imageUrl: trek['imageUrl'] ?? '',
+                          altitude: altitude,
+                          totalDistance: '15-25 km', // Default distance range
+                          ageGroup: '18-50', // Default age group
+                          guideNeeded: 'RECOMMENDED', // Default guide recommendation
+                          snowTrek: 'YES', // Default snow trek status
+                          recommendedGear: 'Trekking boots, Warm clothes, Backpack, Water bottle, First aid kit',
+                          description: 'Experience the breathtaking beauty of ${trekTitle} with stunning mountain views and challenging trails.',
+                        );
+                        
+                        // Navigate to trek details screen
+                        Get.toNamed('/trek-details', arguments: trekObject);
+                      }
                     },
                   ),
                 );

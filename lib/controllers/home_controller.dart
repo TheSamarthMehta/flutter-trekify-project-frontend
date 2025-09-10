@@ -61,28 +61,40 @@ class HomeController extends GetxController {
     // Initialize with specific featured treks
     featuredTreks.value = [
       {
-        'title': 'Valley of Flowers Trek',
+        'title': 'Hampta Pass',
+        'location': 'Himachal Pradesh, India',
+        'difficulty': 'Moderate',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754500630/Hampta_Pass_trek_itwzjy.webp',
+      },
+      {
+        'title': 'Sar Pass',
+        'location': 'Himachal Pradesh, India',
+        'difficulty': 'Moderate',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754500652/Sar_Pass_eqmvwy.jpg',
+      },
+      {
+        'title': 'Bhrigu Lake',
+        'location': 'Himachal Pradesh, India',
+        'difficulty': 'Easy to Moderate',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754500622/Bhrigu_Lake_lvvc0z.png',
+      },
+      {
+        'title': 'Kedarkantha',
         'location': 'Uttarakhand, India',
         'difficulty': 'Moderate',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/moderate_xu1jby.jpg',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1756711534/KEDARKANTHA_TREK_d2kh17.jpg',
       },
       {
-        'title': 'Kashmir Great Lakes Trek',
-        'location': 'Jammu & Kashmir, India',
-        'difficulty': 'Moderate to Difficult',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/difficult_net5vk.jpg',
+        'title': 'Chandrashila + Tungnath Trek',
+        'location': 'Uttarakhand, India',
+        'difficulty': 'Moderate',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1756711499/CHANDRASHILA_TUNGNATH_rfe98d.png',
       },
       {
-        'title': 'Goechala Trek',
-        'location': 'Sikkim, India',
-        'difficulty': 'Difficult',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/difficult_net5vk.jpg',
-      },
-      {
-        'title': 'Chadar Trek',
-        'location': 'Ladakh, India',
-        'difficulty': 'Difficult',
-        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1754843182/difficult_net5vk.jpg',
+        'title': 'Har Ki Dun',
+        'location': 'Uttarakhand, India',
+        'difficulty': 'Moderate',
+        'imageUrl': 'https://res.cloudinary.com/dvnr3ouix/image/upload/v1756711523/HAR_KI_DUN_TREK_vwzix1.jpg',
       },
     ];
   }
